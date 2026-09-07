@@ -31,6 +31,7 @@ if hasattr(scene, 'eevee'):
 scene.view_settings.view_transform = 'Filmic'
 scene.view_settings.look = 'High Contrast'
 
+# Bright Daylight World Sky Dome
 world = scene.world
 if not world:
     world = bpy.data.worlds.new("IndustrialWorld")
@@ -205,7 +206,7 @@ build_conveyor("Conveyor_F1_Side", center_x=-3.0, center_y=7.5, center_z=0.6, le
 build_conveyor("Conveyor_F2_Center", center_x=13.0, center_y=0.0, center_z=4.6, length=36.0, width=1.35)
 
 # -------------------------------------------------------------
-# 6. Dual Escalators
+# 6. Open Escalators (Side Walls Completely Removed)
 # -------------------------------------------------------------
 ESC_DY = 7.5
 ESC_DZ = 4.0
@@ -215,6 +216,7 @@ ESC_LEN = math.sqrt(ESC_DY**2 + ESC_DZ**2)
 escalator_x_positions = [-3.0, 3.0]
 
 for idx, ex in enumerate(escalator_x_positions):
+    # Only the lower machinery conveyor bed remains
     bpy.ops.mesh.primitive_cube_add(size=1, location=(ex, ESC_DY / 2, 2.6))
     esc_bed = bpy.context.active_object
     esc_bed.name = f"Escalator_{idx+1}_Bed"
@@ -223,14 +225,7 @@ for idx, ex in enumerate(escalator_x_positions):
     esc_bed.data.materials.append(mat_machinery_green)
     apply_bevel(esc_bed, 0.02)
 
-    for x_offset in [-1.25, 1.25]:
-        bpy.ops.mesh.primitive_cube_add(size=1, location=(ex + x_offset, ESC_DY / 2, 2.85))
-        esc_rail = bpy.context.active_object
-        esc_rail.name = f"Escalator_{idx+1}_Rail"
-        esc_rail.scale = (0.07, ESC_LEN + 0.2, 0.45)
-        esc_rail.rotation_euler = (-ESC_ANGLE, 0, 0)
-        esc_rail.data.materials.append(mat_safety_yellow)
-
+    # 12 hazard-striped moving steps without side enclosure walls
     for i in range(12):
         ratio = (i + 0.5) / 12
         sy = ESC_DY - (ratio * ESC_DY)
@@ -244,17 +239,16 @@ for idx, ex in enumerate(escalator_x_positions):
         apply_bevel(step, 0.01)
 
 # -------------------------------------------------------------
-# 7. Blast Furnaces (Flat Heavy Hood, Dual Independent Doors)
+# 7. Blast Furnaces (Flat Top Hood & Dual Independent Gates)
 # -------------------------------------------------------------
 furnace_positions = [14.0, 24.0]
-doors_pair_list = []  # Stores (door_left, door_right) for each furnace
+doors_pair_list = []
 pushers = []
 piston_rods_group = []
 
 PARKED_RAM_Y = -0.70
 
 for idx, fx in enumerate(furnace_positions):
-    # Main Rectangular Hearth
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx, 4.8, 4.4))
     hearth = bpy.context.active_object
     hearth.name = f"Furnace_Hearth_{idx+1}"
@@ -262,7 +256,7 @@ for idx, fx in enumerate(furnace_positions):
     hearth.data.materials.append(mat_furnace_oxide)
     apply_bevel(hearth, 0.04)
 
-    # Rectangular Upper Stack & Flat Industrial Exhaust Hood (No rounded cylinders/cones)
+    # Rectangular Upper Stack (No round dome)
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx, 4.8, 6.6))
     stack_rect = bpy.context.active_object
     stack_rect.name = f"Furnace_StackRect_{idx+1}"
@@ -270,7 +264,7 @@ for idx, fx in enumerate(furnace_positions):
     stack_rect.data.materials.append(mat_furnace_mantle)
     apply_bevel(stack_rect, 0.03)
 
-    # Flat Top Heavy Steel Cap / Roof
+    # Flat Top Heavy Steel Cap / Hood
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx, 4.8, 8.1))
     hood_flat = bpy.context.active_object
     hood_flat.name = f"Furnace_FlatHood_{idx+1}"
@@ -278,7 +272,7 @@ for idx, fx in enumerate(furnace_positions):
     hood_flat.data.materials.append(mat_cast_steel)
     apply_bevel(hood_flat, 0.02)
 
-    # Dual Square Industrial Exhaust Duct Flues on top
+    # Dual Square Flues
     for chimney_x in [-1.5, 1.5]:
         bpy.ops.mesh.primitive_cube_add(size=1, location=(fx + chimney_x, 4.8, 9.6))
         flue = bpy.context.active_object
@@ -286,27 +280,25 @@ for idx, fx in enumerate(furnace_positions):
         flue.scale = (0.55, 0.55, 2.8)
         flue.data.materials.append(mat_cast_steel)
 
-    # Molten Iron Core Inside Hearth
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx, 4.8, 3.8))
     bath = bpy.context.active_object
     bath.name = f"Molten_Bath_{idx+1}"
     bath.scale = (5.6, 2.6, 0.25)
     bath.data.materials.append(mat_molten_iron)
 
-    # Infeed Throat Tunnel (Twin Bays divided down center)
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx, 2.3, 4.8))
     throat = bpy.context.active_object
     throat.scale = (5.8, 1.8, 1.25)
     throat.data.materials.append(mat_furnace_oxide)
 
-    # Center Dividing Mullion Post between the twin gate bays
+    # Center Mullion Post
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx, 1.3, 4.8))
     div_post = bpy.context.active_object
     div_post.name = f"Door_Mullion_Post_{idx+1}"
     div_post.scale = (0.18, 0.28, 1.25)
     div_post.data.materials.append(mat_cast_steel)
 
-    # Split Gate: Left Door (covers Block B at fx - 1.25)
+    # Split Gate: Left & Right Doors
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx - 1.35, 1.3, 4.8))
     door_left = bpy.context.active_object
     door_left.name = f"Blast_Door_{idx+1}_Left"
@@ -314,7 +306,6 @@ for idx, fx in enumerate(furnace_positions):
     door_left.data.materials.append(mat_hazard_stripes)
     apply_bevel(door_left, 0.02)
 
-    # Split Gate: Right Door (covers Block A at fx + 1.25)
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx + 1.35, 1.3, 4.8))
     door_right = bpy.context.active_object
     door_right.name = f"Blast_Door_{idx+1}_Right"
@@ -324,7 +315,7 @@ for idx, fx in enumerate(furnace_positions):
 
     doors_pair_list.append((door_left, door_right))
 
-    # Hydraulic Pusher Stator Base Housing
+    # Hydraulic Pusher Stator Base
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx, -3.2, 4.8))
     stator = bpy.context.active_object
     stator.name = f"Pusher_Stator_{idx+1}"
@@ -371,7 +362,7 @@ buffer_catwalk = bpy.context.active_object
 buffer_catwalk.scale = (8.0, 1.2, 0.08)
 buffer_catwalk.data.materials.append(mat_cast_steel)
 
-bpy.ops.mesh.primitive_cube_add(size=1, location=(8.5, 4.5, 5.5))
+bpy.ops.mesh.primitive_cylinder_add(radius=1.1, depth=3.8, location=(8.5, 4.5, 5.5))
 coolant_tank = bpy.context.active_object
 coolant_tank.name = "Coolant_Accumulator_Buffer"
 coolant_tank.data.materials.append(mat_machinery_green)
@@ -599,47 +590,52 @@ def build_high_detail_camera_rig(name, pos, target_loc, gantry_beam_loc):
     build_network_wire(f"Wire_{name}_ToServer", back_loc, (SERVER_X, SERVER_Y, SERVER_Z + 1.8), mat_cat6a_cable)
 
 # -------------------------------------------------------------
-# 12. Escalator Vision Stations (Preserved at Escalator Landing)
+# 12. Lowered Escalator Vision Stations (Brought Down to Slope)
+# Cameras positioned at Z = 4.25 (closer, aimed straight at block on slope)
 # -------------------------------------------------------------
 for esc_num, ex_pos in [(1, -3.0), (2, 3.0)]:
-    for side_x in [ex_pos - 2.5, ex_pos + 2.5]:
-        bpy.ops.mesh.primitive_cylinder_add(radius=0.05, depth=2.4, location=(side_x, 0.65, 5.6))
+    # Lower, compact gantry posts
+    for side_x in [ex_pos - 2.1, ex_pos + 2.1]:
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.045, depth=2.8, location=(side_x, 1.2, 3.9))
         col = bpy.context.active_object
         col.name = f"Gantry_Col_Esc{esc_num}_{side_x}"
         col.data.materials.append(mat_safety_yellow)
 
-    bpy.ops.mesh.primitive_cube_add(size=1, location=(ex_pos, 0.65, 6.7))
+    # Overhead gantry cross beam dropped to Z = 5.30
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(ex_pos, 1.2, 5.30))
     cross_bar = bpy.context.active_object
-    cross_bar.scale = (5.2, 0.12, 0.12)
+    cross_bar.scale = (4.4, 0.12, 0.12)
     cross_bar.data.materials.append(mat_safety_yellow)
 
-    face_lead_end_loc  = (ex_pos + 1.15, 0.65, 4.8)
-    face_trail_end_loc = (ex_pos - 1.15, 0.65, 4.8)
+    # Target: Narrow end faces while the block pauses on the upper incline slope
+    face_lead_end_loc  = (ex_pos + 1.15, 1.2, 4.16)
+    face_trail_end_loc = (ex_pos - 1.15, 1.2, 4.16)
 
-    pos_cam_lead  = (ex_pos + 2.4, 0.65, 5.05)
-    pos_cam_trail = (ex_pos - 2.4, 0.65, 5.05)
+    # Cameras brought down and closer to the escalator: Z = 4.30, closer lateral span
+    pos_cam_lead  = (ex_pos + 2.0, 1.2, 4.30)
+    pos_cam_trail = (ex_pos - 2.0, 1.2, 4.30)
 
     bpy.ops.object.camera_add(location=pos_cam_lead)
     cam_lead = bpy.context.active_object
     cam_lead.name = f"Camera_OCR_Esc{esc_num}_LeadEnd"
-    cam_lead.data.lens = 55
+    cam_lead.data.lens = 45
     align_obj_to_target(cam_lead, face_lead_end_loc)
-    build_high_detail_camera_rig(f"Rig_Esc{esc_num}_Lead", pos_cam_lead, face_lead_end_loc, (ex_pos + 2.4, 0.65, 6.7))
+    build_high_detail_camera_rig(f"Rig_Esc{esc_num}_Lead", pos_cam_lead, face_lead_end_loc, (ex_pos + 2.0, 1.2, 5.30))
 
     bpy.ops.object.camera_add(location=pos_cam_trail)
     cam_trail = bpy.context.active_object
     cam_trail.name = f"Camera_OCR_Esc{esc_num}_TrailEnd"
-    cam_trail.data.lens = 55
+    cam_trail.data.lens = 45
     align_obj_to_target(cam_trail, face_trail_end_loc)
-    build_high_detail_camera_rig(f"Rig_Esc{esc_num}_Trail", pos_cam_trail, face_trail_end_loc, (ex_pos - 2.4, 0.65, 6.7))
+    build_high_detail_camera_rig(f"Rig_Esc{esc_num}_Trail", pos_cam_trail, face_trail_end_loc, (ex_pos - 2.0, 1.2, 5.30))
 
     for pos_spot, target in [(pos_cam_lead, face_lead_end_loc), (pos_cam_trail, face_trail_end_loc)]:
         bpy.ops.object.light_add(type='SPOT', location=(pos_spot[0], pos_spot[1], pos_spot[2] + 0.15))
         ocr_light = bpy.context.active_object
         ocr_light.name = f"OCR_Spot_Esc{esc_num}_{pos_spot[0]}"
         align_obj_to_target(ocr_light, target)
-        ocr_light.data.energy = 900.0
-        ocr_light.data.spot_size = math.radians(40)
+        ocr_light.data.energy = 850.0
+        ocr_light.data.spot_size = math.radians(42)
         ocr_light.data.spot_blend = 0.2
         ocr_light.data.color = (0.95, 0.98, 1.0)
 
@@ -697,6 +693,7 @@ for f_idx, fx in enumerate(furnace_positions):
         f_ocr_light.data.spot_blend = 0.2
         f_ocr_light.data.color = (0.95, 0.98, 1.0)
 
+# Default to the lowered Escalator 2 Lead camera
 scene.camera = bpy.data.objects.get("Camera_OCR_Esc2_LeadEnd")
 
 # -------------------------------------------------------------
@@ -759,7 +756,7 @@ def add_stamped_id_to_end_faces(parent_block, block_num):
     text_trail.scale = (1.0 / 0.58, 1.0 / 0.36, 1.0 / 2.3)
 
 # -------------------------------------------------------------
-# 15. Multi-Block Sequential Animation Timeline
+# 15. Sequential Animation Timeline (Inspection Stop on the Slope)
 # -------------------------------------------------------------
 def set_loc_key(obj, frame, loc):
     obj.location = loc
@@ -778,8 +775,9 @@ scene.frame_end = 560
 
 PAIR_CYCLE_INTERVAL = 140
 TRAVEL_F1_BASE      = 35
-RIDE_ESCALATOR      = 35
-STOP_DURATION       = 24
+RIDE_TO_SLOPE_STOP  = 28  # Ascends to upper slope
+STOP_DURATION       = 24  # 1-second OCR pause right on the slope incline
+CREST_TIME          = 8   # Completes ascent onto 2nd floor level
 PUSH_STROKE         = 24
 MELT_TIME           = 25
 RETRACT_TIME        = 16
@@ -829,30 +827,31 @@ for pair_idx in range(NUM_PAIRS):
         set_loc_key(block, t_reach_esc, (esc_x, 7.5, 0.8))
         set_rot_key(block, t_reach_esc, (0, 0, 0))
 
-        # 2. Ascend Escalators
-        t_crest_esc = t_reach_esc + RIDE_ESCALATOR
+        # 2. Ascend and STOP RIGHT ON THE ESCALATOR SLOPE (Y = 1.2, Z = 4.16, tilted)
+        t_reach_slope_stop = t_reach_esc + RIDE_TO_SLOPE_STOP
         set_rot_key(block, t_reach_esc + 3, (-ESC_ANGLE, 0, 0))
-        set_rot_key(block, t_crest_esc - 3, (-ESC_ANGLE, 0, 0))
+        set_rot_key(block, t_reach_slope_stop, (-ESC_ANGLE, 0, 0))
+        set_loc_key(block, t_reach_slope_stop, (esc_x, 1.2, 4.16))
+
+        # 3. 1-SECOND INSPECTION STOP DIRECTLY ON THE SLOPE IN FRONT OF LOWERED CAMERAS
+        t_resume_slope = t_reach_slope_stop + STOP_DURATION
+        set_loc_key(block, t_resume_slope, (esc_x, 1.2, 4.16))
+        set_rot_key(block, t_resume_slope, (-ESC_ANGLE, 0, 0))
+
+        # 4. Finish the remaining climb to top landing and level out onto 2nd Floor
+        t_crest_esc = t_resume_slope + CREST_TIME
+        set_rot_key(block, t_crest_esc - 2, (-ESC_ANGLE, 0, 0))
         set_rot_key(block, t_crest_esc, (0, 0, 0))
-        set_loc_key(block, t_crest_esc, (esc_x, 0.65, 4.8))
+        set_loc_key(block, t_crest_esc, (esc_x, 0.0, 4.8))
 
-        # 3. 1-SECOND INSPECTION STOP AT ESCALATOR TOP
-        t_resume_esc = t_crest_esc + STOP_DURATION
-        set_loc_key(block, t_resume_esc, (esc_x, 0.65, 4.8))
-        set_rot_key(block, t_resume_esc, (0, 0, 0))
-
-        # 4. Handoff to 2nd Floor Centerline (Y = 0.0)
-        t_onto_belt = t_resume_esc + 8
-        set_loc_key(block, t_onto_belt, (esc_x, 0.0, 4.8))
-        set_rot_key(block, t_onto_belt, (0, 0, 0))
-
+        # 5. Travel along 2nd Floor Conveyor to Stage at Furnace
         target_staging_x = furnace_x + pair_x_offset
         dist_to_furnace = abs(target_staging_x - esc_x)
-        t_reach_furnace = t_onto_belt + int(dist_to_furnace * 2.1)
+        t_reach_furnace = t_crest_esc + int(dist_to_furnace * 2.1)
         set_loc_key(block, t_reach_furnace, (target_staging_x, 0.0, 4.8))
         set_rot_key(block, t_reach_furnace, (0, 0, 0))
 
-    t_pair_staged = max(t_pair_start + 110, t_reach_furnace)
+    t_pair_staged = max(t_pair_start + 115, t_reach_furnace)
     for slot, block in enumerate(pair_blocks):
         pair_x_offset = 1.25 if slot == 0 else -1.25
         set_loc_key(block, t_pair_staged, (furnace_x + pair_x_offset, 0.0, 4.8))
@@ -861,7 +860,7 @@ for pair_idx in range(NUM_PAIRS):
     keyframe_pusher_assembly(p, rods_for_station, t_pair_start,  PARKED_RAM_Y)
     keyframe_pusher_assembly(p, rods_for_station, t_pair_staged, PARKED_RAM_Y)
 
-    # 5. Both Split Blast Doors Open Simultaneously
+    # 6. Both Split Blast Doors Open Simultaneously
     t_door_open_start = t_pair_staged
     t_door_open_end   = t_door_open_start + 8
     set_loc_key(door_left, t_door_open_start, (furnace_x - 1.35, 1.3, 4.8))
@@ -869,7 +868,7 @@ for pair_idx in range(NUM_PAIRS):
     set_loc_key(door_right, t_door_open_start, (furnace_x + 1.35, 1.3, 4.8))
     set_loc_key(door_right, t_door_open_end,   (furnace_x + 1.35, 1.3, 6.2))
 
-    # 6. Push Stroke
+    # 7. Push Stroke
     t_approach_start = t_door_open_end + 1
     t_contact        = t_approach_start + 3
     keyframe_pusher_assembly(p, rods_for_station, t_approach_start, PARKED_RAM_Y)
@@ -888,7 +887,7 @@ for pair_idx in range(NUM_PAIRS):
     t_retract_end = t_inside + RETRACT_TIME
     keyframe_pusher_assembly(p, rods_for_station, t_retract_end, PARKED_RAM_Y)
 
-    # 7. Both Split Blast Doors Close
+    # 8. Both Split Blast Doors Close
     t_door_close_start = t_inside + 4
     t_door_close_end   = t_door_close_start + 8
     set_loc_key(door_left, t_door_close_start, (furnace_x - 1.35, 1.3, 6.2))
@@ -896,7 +895,7 @@ for pair_idx in range(NUM_PAIRS):
     set_loc_key(door_right, t_door_close_start, (furnace_x + 1.35, 1.3, 6.2))
     set_loc_key(door_right, t_door_close_end,   (furnace_x + 1.35, 1.3, 4.8))
 
-    # 8. Smelt & Dissolve into Molten Bath
+    # 9. Smelt & Dissolve into Molten Bath
     for slot, block in enumerate(pair_blocks):
         pair_x_offset = 1.25 if slot == 0 else -1.25
         b_mat = pair_materials[slot]
