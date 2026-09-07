@@ -1,121 +1,412 @@
 import bpy
-import random
 import math
 
-def clean_scene():
+def clear_scene():
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.delete(use_global=False)
+    for m in bpy.data.materials:
+        bpy.data.materials.remove(m)
+    for a in bpy.data.actions:
+        bpy.data.actions.remove(a)
 
-def create_material(name, diffuse_color, roughness=0.5, metallic=0.0):
-    mat = bpy.data.materials.get(name)
-    if mat is None:
-        mat = bpy.data.materials.new(name=name)
-        mat.use_nodes = True
-        bsdf = mat.node_tree.nodes.get("Principled BSDF")
-        bsdf.inputs['Base Color'].default_value = diffuse_color
-        bsdf.inputs['Roughness'].default_value = roughness
-        bsdf.inputs['Metallic'].default_value = metallic
-    return mat
+def get_principled_bsdf(mat):
+    mat.use_nodes = True
+    for node in mat.node_tree.nodes:
+        if node.type == 'BSDF_PRINCIPLED':
+            return node
+    return mat.node_tree.nodes.new('ShaderNodeBsdfPrincipled')
 
-def setup_rescueswarm_arena():
-    clean_scene()
+# -------------------------------------------------------------
+# PHOTOREALISTIC PROCEDURAL MATERIALS (EEVEE-Next & Cycles Ready)
+# -------------------------------------------------------------
+def create_materials():
+    # 1. Mud / Terrain Material
+    mat_mud = bpy.data.materials.new("Realistic_Mud")
+    bsdf_mud = get_principled_bsdf(mat_mud)
+    nt_mud = mat_mud.node_tree
     
-    # Materials
-    mat_terrain = create_material("MudTerrain", (0.22, 0.15, 0.08, 1.0), roughness=0.9)
-    mat_water = create_material("FloodWater", (0.05, 0.2, 0.25, 1.0), roughness=0.1, metallic=0.2)
-    mat_pad = create_material("LaunchPad", (0.8, 0.7, 0.1, 1.0), roughness=0.4)
-    mat_house = create_material("DamagedHouse", (0.4, 0.4, 0.45, 1.0), roughness=0.8)
-    mat_survivor = create_material("Survivor", (0.9, 0.1, 0.0, 1.0), roughness=0.3)
-    mat_drone = create_material("DroneFrame", (0.1, 0.1, 0.1, 1.0), roughness=0.2, metallic=0.8)
-    mat_kit = create_material("SurvivorKit", (0.9, 0.9, 0.9, 1.0), roughness=0.3)
+    tex_noise_mud = nt_mud.nodes.new('ShaderNodeTexNoise')
+    tex_noise_mud.inputs['Scale'].default_value = 25.0
+    tex_noise_mud.inputs['Detail'].default_value = 8.0
+    
+    col_ramp_mud = nt_mud.nodes.new('ShaderNodeValToRGB')
+    col_ramp_mud.color_ramp.elements[0].color = (0.08, 0.05, 0.03, 1.0)
+    col_ramp_mud.color_ramp.elements[1].color = (0.22, 0.16, 0.10, 1.0)
+    
+    bump_mud = nt_mud.nodes.new('ShaderNodeBump')
+    bump_mud.inputs['Strength'].default_value = 0.4
+    
+    nt_mud.links.new(tex_noise_mud.outputs['Fac'], col_ramp_mud.inputs['Fac'])
+    nt_mud.links.new(col_ramp_mud.outputs['Color'], bsdf_mud.inputs['Base Color'])
+    nt_mud.links.new(tex_noise_mud.outputs['Fac'], bump_mud.inputs['Height'])
+    nt_mud.links.new(bump_mud.outputs['Normal'], bsdf_mud.inputs['Normal'])
+    bsdf_mud.inputs['Roughness'].default_value = 0.85
 
-    # 1. 10-Hectare Terrain (100,000 m^2 = ~316.2m x 316.2m)
-    side_len = 316.23
-    bpy.ops.mesh.primitive_plane_add(size=side_len, location=(0, 0, 0))
+    # 2. Floodwater Material (Physical glass/refraction properties)
+    mat_water = bpy.data.materials.new("Realistic_Floodwater")
+    bsdf_water = get_principled_bsdf(mat_water)
+    nt_water = mat_water.node_tree
+    
+    tex_noise_water = nt_water.nodes.new('ShaderNodeTexNoise')
+    tex_noise_water.inputs['Scale'].default_value = 14.0
+    tex_noise_water.inputs['Detail'].default_value = 4.0
+    
+    bump_water = nt_water.nodes.new('ShaderNodeBump')
+    bump_water.inputs['Strength'].default_value = 0.08
+    
+    nt_water.links.new(tex_noise_water.outputs['Fac'], bump_water.inputs['Height'])
+    nt_water.links.new(bump_water.outputs['Normal'], bsdf_water.inputs['Normal'])
+    
+    bsdf_water.inputs['Base Color'].default_value = (0.05, 0.12, 0.14, 1.0)
+    bsdf_water.inputs['Roughness'].default_value = 0.04
+    bsdf_water.inputs['IOR'].default_value = 1.333
+    if 'Transmission Weight' in bsdf_water.inputs:
+        bsdf_water.inputs['Transmission Weight'].default_value = 0.92
+    elif 'Transmission' in bsdf_water.inputs:
+        bsdf_water.inputs['Transmission'].default_value = 0.92
+
+    # 3. Holographic Signal / Radar Beam
+    mat_radar = bpy.data.materials.new("Holo_Radar_Cone")
+    mat_radar.use_nodes = True
+    mat_radar.blend_method = 'BLEND'
+    nt_r = mat_radar.node_tree
+    for n in nt_r.nodes: nt_r.nodes.remove(n)
+    node_out = nt_r.nodes.new('ShaderNodeOutputMaterial')
+    node_emit = nt_r.nodes.new('ShaderNodeEmission')
+    node_emit.inputs['Color'].default_value = (0.0, 0.85, 1.0, 1.0)
+    node_emit.inputs['Strength'].default_value = 5.0
+    node_trans = nt_r.nodes.new('ShaderNodeBsdfTransparent')
+    node_mix = nt_r.nodes.new('ShaderNodeMixShader')
+    node_mix.inputs['Fac'].default_value = 0.78
+    nt_r.links.new(node_emit.outputs['Emission'], node_mix.inputs[2])
+    nt_r.links.new(node_trans.outputs['BSDF'], node_mix.inputs[1])
+    nt_r.links.new(node_mix.outputs['Shader'], node_out.inputs['Surface'])
+
+    # 4. Mesh Inter-Drone Laser Comm Pulse
+    mat_comm = bpy.data.materials.new("InterDrone_MeshComm")
+    mat_comm.use_nodes = True
+    mat_comm.blend_method = 'BLEND'
+    nt_c = mat_comm.node_tree
+    for n in nt_c.nodes: nt_c.nodes.remove(n)
+    node_c_out = nt_c.nodes.new('ShaderNodeOutputMaterial')
+    node_c_emit = nt_c.nodes.new('ShaderNodeEmission')
+    node_c_emit.inputs['Color'].default_value = (1.0, 0.85, 0.05, 1.0) # Tactical Amber
+    node_c_emit.inputs['Strength'].default_value = 12.0
+    nt_c.links.new(node_c_emit.outputs['Emission'], node_c_out.inputs['Surface'])
+
+    # 5. Geotag Marker Ring / Beacon
+    mat_geo = bpy.data.materials.new("Geotag_Marker")
+    mat_geo.use_nodes = True
+    nt_g = mat_geo.node_tree
+    for n in nt_g.nodes: nt_g.nodes.remove(n)
+    out_g = nt_g.nodes.new('ShaderNodeOutputMaterial')
+    emit_g = nt_g.nodes.new('ShaderNodeEmission')
+    emit_g.inputs['Color'].default_value = (1.0, 0.08, 0.08, 1.0) # Red Alert
+    emit_g.inputs['Strength'].default_value = 8.0
+    nt_g.links.new(emit_g.outputs['Emission'], out_g.inputs['Surface'])
+
+    # 6. Drone Carbon Composite
+    mat_drone = bpy.data.materials.new("Drone_Carbon")
+    bsdf_d = get_principled_bsdf(mat_drone)
+    bsdf_d.inputs['Base Color'].default_value = (0.02, 0.02, 0.02, 1.0)
+    bsdf_d.inputs['Roughness'].default_value = 0.25
+    bsdf_d.inputs['Metallic'].default_value = 0.85
+
+    # 7. Survival Kit 200g Box (Medical Orange/White cross)
+    mat_kit = bpy.data.materials.new("Medical_Kit")
+    bsdf_k = get_principled_bsdf(mat_kit)
+    bsdf_k.inputs['Base Color'].default_value = (0.95, 0.35, 0.05, 1.0)
+    bsdf_k.inputs['Roughness'].default_value = 0.3
+
+    return {
+        "mud": mat_mud, "water": mat_water, "radar": mat_radar,
+        "comm": mat_comm, "geotag": mat_geo, "drone": mat_drone, "kit": mat_kit
+    }
+
+# -------------------------------------------------------------
+# DETAILED VEHICLE & SENSOR BUILDERS
+# -------------------------------------------------------------
+def build_quadrotor(name, location, materials):
+    body_coll = bpy.data.collections.new(name)
+    bpy.context.scene.collection.children.link(body_coll)
+    
+    # Central Airframe Chassis
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0,0,0))
+    chassis = bpy.context.active_object
+    chassis.name = f"{name}_Fuselage"
+    chassis.scale = (0.35, 0.35, 0.1)
+    chassis.data.materials.append(materials["drone"])
+    
+    # 4 Quadrotor Arms and Spinning Propellers
+    propellers = []
+    offsets = [(0.4, 0.4), (-0.4, 0.4), (-0.4, -0.4), (0.4, -0.4)]
+    for idx, (ox, oy) in enumerate(offsets):
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.035, depth=0.6, location=(ox/2, oy/2, 0))
+        arm = bpy.context.active_object
+        arm.name = f"{name}_Arm_{idx+1}"
+        arm.rotation_euler = (0, math.radians(90), math.atan2(oy, ox))
+        arm.data.materials.append(materials["drone"])
+        arm.parent = chassis
+        
+        # Motor Stator
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.07, depth=0.08, location=(ox, oy, 0.06))
+        motor = bpy.context.active_object
+        motor.name = f"{name}_Motor_{idx+1}"
+        motor.data.materials.append(materials["drone"])
+        motor.parent = chassis
+        
+        # Propeller Blade
+        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(ox, oy, 0.11))
+        prop = bpy.context.active_object
+        prop.name = f"{name}_Prop_{idx+1}"
+        prop.scale = (0.32, 0.04, 0.006)
+        prop.data.materials.append(materials["drone"])
+        prop.parent = chassis
+        propellers.append(prop)
+
+    # Downward Sensor Gimbal Camera
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.06, depth=0.1, location=(0, 0, -0.08))
+    gimbal = bpy.context.active_object
+    gimbal.name = f"{name}_SensorCam"
+    gimbal.rotation_euler = (math.radians(180), 0, 0)
+    gimbal.data.materials.append(materials["drone"])
+    gimbal.parent = chassis
+
+    chassis.location = location
+    return chassis, propellers
+
+# -------------------------------------------------------------
+# SCENE CONSTRUCTION & SIMULATION SETUP
+# -------------------------------------------------------------
+def setup_complete_scene():
+    clear_scene()
+    mats = create_materials()
+
+    # Timeline (30 FPS, 350 frames = 11.6 seconds of operational workflow)
+    scene = bpy.context.scene
+    scene.frame_start = 1
+    scene.frame_end = 350
+    scene.render.fps = 30
+
+    # 1. Physical Environment: Riverbed + Displaced Flood Terrain
+    bpy.ops.mesh.primitive_plane_add(size=120, location=(0, 0, 0))
     terrain = bpy.context.active_object
-    terrain.name = "10Ha_Search_Arena"
-    terrain.data.materials.append(mat_terrain)
+    terrain.name = "Flooded_Settlement_Terrain"
+    terrain.data.materials.append(mats["mud"])
     
-    # Add subdivision and displace for river basin contours
     bpy.ops.object.modifier_add(type='SUBSURF')
     terrain.modifiers["Subdivision"].levels = 3
-    
-    # 2. Floodwater plane across semi-urban river basin
-    bpy.ops.mesh.primitive_plane_add(size=side_len * 1.02, location=(0, 0, 0.3))
+    bpy.ops.object.modifier_add(type='DISPLACE')
+    tex_disp = bpy.data.textures.new("Basin_Displace", type='CLOUDS')
+    tex_disp.noise_scale = 1.2
+    terrain.modifiers["Displace"].texture = tex_disp
+    terrain.modifiers["Displace"].strength = 3.5
+
+    # Water Body
+    bpy.ops.mesh.primitive_plane_add(size=125, location=(0, 0, 0.45))
     water = bpy.context.active_object
-    water.name = "RiverBasin_FloodWater"
-    water.data.materials.append(mat_water)
+    water.name = "Flash_Flood_WaterSheet"
+    water.data.materials.append(mats["water"])
 
-    # 3. Designated Launch/Landing Area: 12ft x 12ft (3.66m x 3.66m)
-    pad_dim = 12 * 0.3048  # 3.6576 m
-    bpy.ops.mesh.primitive_plane_add(size=pad_dim, location=(-side_len/2 + 20, -side_len/2 + 20, 0.35))
-    launch_pad = bpy.context.active_object
-    launch_pad.name = "Launch_Landing_Zone_12x12ft"
-    launch_pad.data.materials.append(mat_pad)
+    # 12ft x 12ft (3.66m) Takeoff/Recovery Pad
+    pad_dim = 12 * 0.3048
+    bpy.ops.mesh.primitive_plane_add(size=pad_dim, location=(-25, -25, 0.7))
+    pad = bpy.context.active_object
+    pad.name = "Launch_Landing_Station"
+    pad_mat = bpy.data.materials.new("Pad_Mat")
+    bsdf_p = get_principled_bsdf(pad_mat)
+    bsdf_p.inputs['Base Color'].default_value = (0.85, 0.65, 0.05, 1.0)
+    pad.data.materials.append(pad_mat)
 
-    # 4. Inaccessible Semi-Urban Settlements (Houses/Ruins)
-    random.seed(42)
-    for i in range(25):
-        hx = random.uniform(-side_len/2 + 30, side_len/2 - 30)
-        hy = random.uniform(-side_len/2 + 30, side_len/2 - 30)
-        sx, sy, sz = random.uniform(6, 12), random.uniform(6, 10), random.uniform(3, 7)
-        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(hx, hy, sz/2))
-        house = bpy.context.active_object
-        house.scale = (sx, sy, sz)
-        house.name = f"Structure_{i+1}"
-        house.data.materials.append(mat_house)
+    # 2. Stranded Building Structure & Human Survivor
+    survivor_loc = (18.0, 14.0, 2.2)
+    
+    # Submerged Roof / Refuge Point
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(18.0, 14.0, 1.0))
+    building = bpy.context.active_object
+    building.scale = (7.0, 7.0, 2.0)
+    building.name = "Submerged_Concrete_Structure"
+    b_mat = bpy.data.materials.new("Concrete_Mat")
+    bsdf_b = get_principled_bsdf(b_mat)
+    bsdf_b.inputs['Base Color'].default_value = (0.28, 0.3, 0.32, 1.0)
+    building.data.materials.append(b_mat)
 
-    # 5. Place 10 Survivors (dummies / humans to geotag)
-    for s_idx in range(10):
-        sx = random.uniform(-side_len/2 + 35, side_len/2 - 35)
-        sy = random.uniform(-side_len/2 + 35, side_len/2 - 35)
-        bpy.ops.mesh.primitive_cylinder_add(radius=0.3, depth=1.7, location=(sx, sy, 0.85))
-        survivor = bpy.context.active_object
-        survivor.name = f"Survivor_Target_{s_idx+1}"
-        survivor.data.materials.append(mat_survivor)
+    # Survivor / Dummy Figure
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.3, depth=1.6, location=survivor_loc)
+    survivor = bpy.context.active_object
+    survivor.name = "Stranded_Survivor"
+    survivor_mat = bpy.data.materials.new("LifeVest_Neon")
+    bsdf_sv = get_principled_bsdf(survivor_mat)
+    bsdf_sv.inputs['Base Color'].default_value = (1.0, 0.25, 0.0, 1.0) # High-vis orange
+    survivor.data.materials.append(survivor_mat)
 
-    # 6. Build Swarm of 3 Autonomous Multirotors (PS1 requires >= 2)
-    drone_positions = [
-        (-side_len/2 + 19, -side_len/2 + 19, 0.8),
-        (-side_len/2 + 20, -side_len/2 + 20, 0.8),
-        (-side_len/2 + 21, -side_len/2 + 21, 0.8),
-    ]
+    # Pulsing Geotag Target Cylinder / Beacon (Triggered upon scout detection)
+    bpy.ops.mesh.primitive_cylinder_add(radius=1.8, depth=0.08, location=(18.0, 14.0, 2.05))
+    geotag_beacon = bpy.context.active_object
+    geotag_beacon.name = "Geotag_Marker_Zone"
+    geotag_beacon.data.materials.append(mats["geotag"])
+    geotag_beacon.hide_render = True
+    geotag_beacon.hide_viewport = True
 
-    for d_idx, pos in enumerate(drone_positions):
-        # Drone Base Hub
-        bpy.ops.mesh.primitive_cylinder_add(radius=0.35, depth=0.1, location=pos)
-        drone = bpy.context.active_object
-        drone.name = f"RescueSwarm_Drone_{d_idx+1}"
-        drone.data.materials.append(mat_drone)
-        
-        # Survivor Kit Payload: 20cm x 10cm x 5cm (0.2 x 0.1 x 0.05m)
-        bpy.ops.mesh.primitive_cube_add(
-            size=1.0, 
-            location=(pos[0], pos[1], pos[2] - 0.1)
-        )
-        kit = bpy.context.active_object
-        kit.scale = (0.2, 0.1, 0.05)
-        kit.name = f"Kit_200g_Drone_{d_idx+1}"
-        kit.data.materials.append(mat_kit)
-        kit.parent = drone
+    # 3. Assemble Drone 1 (Scout / Detector) & Drone 2 (Logistics / Payload Carrier)
+    drone1, d1_props = build_quadrotor("Drone_1_Scout", (-24, -24, 0.9), mats)
+    drone2, d2_props = build_quadrotor("Drone_2_Delivery", (-26, -26, 0.9), mats)
 
-        # Downward Sensing / Vision Camera
-        cam_data = bpy.data.cameras.new(name=f"Camera_Drone_{d_idx+1}")
-        cam_obj = bpy.data.objects.new(f"SensorCam_Drone_{d_idx+1}", cam_data)
-        bpy.context.collection.objects.link(cam_obj)
-        cam_obj.location = (pos[0], pos[1], pos[2] - 0.05)
-        cam_obj.rotation_euler = (math.radians(180), 0, 0)
-        cam_obj.parent = drone
+    # Holographic Conical Vision Cone for Drone 1
+    bpy.ops.mesh.primitive_cone_add(radius1=3.5, radius2=0.05, depth=7.0, location=(0, 0, -3.5))
+    vision_cone = bpy.context.active_object
+    vision_cone.name = "Drone1_Autonomous_ScanningBeam"
+    vision_cone.data.materials.append(mats["radar"])
+    vision_cone.parent = drone1
+    vision_cone.hide_render = True
+    vision_cone.hide_viewport = True
 
-    # Sun & Overview Camera
-    bpy.ops.object.light_add(type='SUN', location=(0, 0, 100))
+    # Standard Survival Kit Box: 20cm x 10cm x 5cm (0.2m x 0.1m x 0.05m)
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(-26, -26, 0.75))
+    kit = bpy.context.active_object
+    kit.name = "Payload_SurvivalKit_200g"
+    kit.scale = (0.2, 0.1, 0.05)
+    kit.data.materials.append(mats["kit"])
+    kit.parent = drone2
+
+    # Tactical Laser Inter-Drone Comm Beam (Data Transfer)
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.04, depth=1.0, location=(0, 0, 0))
+    comm_link = bpy.context.active_object
+    comm_link.name = "InterDrone_LaserComm_Mesh"
+    comm_link.data.materials.append(mats["comm"])
+    comm_link.hide_render = True
+    comm_link.hide_viewport = True
+
+    # -------------------------------------------------------------
+    # COMPLETE ANIMATION SCRIPTING: DETECTION -> DISPATCH -> DROP
+    # -------------------------------------------------------------
+    
+    # Drone 1 Scout Mission Trajectory (Frames 1 - 120)
+    drone1.location = (-24, -24, 0.9)
+    drone1.keyframe_insert(data_path="location", frame=1)
+    
+    drone1.location = (-15, -10, 7.5) # Ascend and patrol
+    drone1.keyframe_insert(data_path="location", frame=40)
+    
+    # Enter hover & scan above survivor
+    drone1.location = (18.0, 14.0, 7.0)
+    drone1.keyframe_insert(data_path="location", frame=90)
+    drone1.keyframe_insert(data_path="location", frame=150) # Stable loiter
+
+    # Scanning Vision Cone Activation (Turns on during search, captures survivor at Frame 90-120)
+    vision_cone.hide_viewport = True
+    vision_cone.hide_render = True
+    vision_cone.keyframe_insert(data_path="hide_viewport", frame=35)
+    vision_cone.keyframe_insert(data_path="hide_render", frame=35)
+    vision_cone.hide_viewport = False
+    vision_cone.hide_render = False
+    vision_cone.keyframe_insert(data_path="hide_viewport", frame=40)
+    vision_cone.keyframe_insert(data_path="hide_render", frame=40)
+    
+    # Geotag Locked (Frame 110)
+    geotag_beacon.hide_viewport = True
+    geotag_beacon.hide_render = True
+    geotag_beacon.keyframe_insert(data_path="hide_viewport", frame=109)
+    geotag_beacon.keyframe_insert(data_path="hide_render", frame=109)
+    geotag_beacon.hide_viewport = False
+    geotag_beacon.hide_render = False
+    geotag_beacon.keyframe_insert(data_path="hide_viewport", frame=110)
+    geotag_beacon.keyframe_insert(data_path="hide_render", frame=110)
+
+    # Inter-Drone Mesh Transmission (Frames 115 - 145)
+    # Stretch comm cylinder between Drone 1 (18, 14, 7) and Drone 2 at pad (-26, -26, 0.9)
+    p1 = (18.0, 14.0, 7.0)
+    p2 = (-26.0, -26.0, 0.9)
+    midpoint = ((p1[0]+p2[0])/2, (p1[1]+p2[1])/2, (p1[2]+p2[2])/2)
+    dist = math.sqrt((p1[0]-p2[0])**2 + (p1[1]-p2[1])**2 + (p1[2]-p2[2])**2)
+    comm_link.location = midpoint
+    comm_link.scale = (1, 1, dist)
+    
+    # Vector math for cylinder alignment
+    dx, dy, dz = p1[0]-p2[0], p1[1]-p2[1], p1[2]-p2[2]
+    phi = math.atan2(dy, dx)
+    theta = math.acos(dz / dist)
+    comm_link.rotation_euler = (0, theta, phi + math.radians(90))
+
+    comm_link.hide_viewport = True
+    comm_link.hide_render = True
+    comm_link.keyframe_insert(data_path="hide_viewport", frame=114)
+    comm_link.keyframe_insert(data_path="hide_render", frame=114)
+    comm_link.hide_viewport = False
+    comm_link.hide_render = False
+    comm_link.keyframe_insert(data_path="hide_viewport", frame=115)
+    comm_link.keyframe_insert(data_path="hide_render", frame=115)
+    
+    comm_link.hide_viewport = True
+    comm_link.hide_render = True
+    comm_link.keyframe_insert(data_path="hide_viewport", frame=145)
+    comm_link.keyframe_insert(data_path="hide_render", frame=145)
+
+    # Turn off Vision Cone once handoff complete
+    vision_cone.hide_viewport = True
+    vision_cone.hide_render = True
+    vision_cone.keyframe_insert(data_path="hide_viewport", frame=146)
+    vision_cone.keyframe_insert(data_path="hide_render", frame=146)
+
+    # Drone 2 Dispatched to Geotag Coordinates (Frames 140 - 240)
+    drone2.location = (-26.0, -26.0, 0.9)
+    drone2.keyframe_insert(data_path="location", frame=140)
+    
+    drone2.location = (-26.0, -26.0, 8.5) # Takeoff
+    drone2.keyframe_insert(data_path="location", frame=170)
+    
+    drone2.location = (18.0, 14.0, 6.5) # Cruise to exact target
+    drone2.keyframe_insert(data_path="location", frame=235)
+    drone2.keyframe_insert(data_path="location", frame=275) # Hover for drop
+
+    # Autonomous Kit Drop Dynamics (Frame 250 release to Zone A <1m accuracy)
+    # Unparent kit using visual transform at frame 250
+    kit.keyframe_insert(data_path="location", frame=250)
+    
+    # Ground Impact (Roof surface Z = 2.05m)
+    kit.location = (18.2, 14.1, 2.06)
+    kit.keyframe_insert(data_path="location", frame=275)
+    kit.keyframe_insert(data_path="location", frame=350)
+
+    # Both Drones Perform Coordinated RTL (Frames 285 - 350)
+    drone1.location = (-24, -24, 0.9)
+    drone1.keyframe_insert(data_path="location", frame=345)
+    drone2.location = (-26, -26, 0.9)
+    drone2.keyframe_insert(data_path="location", frame=350)
+
+    # Propeller Rotation Animation (Continuous fast rotation)
+    for p in d1_props + d2_props:
+        p.rotation_euler = (0, 0, 0)
+        p.keyframe_insert(data_path="rotation_euler", frame=1)
+        p.rotation_euler = (0, 0, math.radians(3600 * 5))
+        p.keyframe_insert(data_path="rotation_euler", frame=350)
+
+    # Cinematic Tracking Camera (Keyframed from wide scout tracking to drop close-up)
+    bpy.ops.object.camera_add(location=(-5, -15, 14))
+    cam = bpy.context.active_object
+    cam.name = "Cinematic_Mission_Cam"
+    scene.camera = cam
+    
+    cam.rotation_euler = (math.radians(65), 0, math.radians(30))
+    cam.keyframe_insert(data_path="location", frame=1)
+    cam.keyframe_insert(data_path="rotation_euler", frame=1)
+
+    # Zoom in during Detection & Signal Phase
+    cam.location = (10, 8, 9)
+    cam.rotation_euler = (math.radians(72), 0, math.radians(45))
+    cam.keyframe_insert(data_path="location", frame=120)
+    cam.keyframe_insert(data_path="rotation_euler", frame=120)
+
+    # Focus directly on Survivor & Zone A Precision Kit Delivery
+    cam.location = (21, 10, 3.5)
+    cam.rotation_euler = (math.radians(75), 0, math.radians(65))
+    cam.keyframe_insert(data_path="location", frame=260)
+    cam.keyframe_insert(data_path="rotation_euler", frame=260)
+
+    # Environment Sun Lighting (Simulates daylight competition conditions)
+    bpy.ops.object.light_add(type='SUN', location=(10, -20, 50))
     sun = bpy.context.active_object
-    sun.data.energy = 3.5
+    sun.data.energy = 4.0
+    sun.data.angle = math.radians(1.5) # Sharp realistic solar shadows
 
-    bpy.ops.object.camera_add(location=(-120, -180, 140))
-    scene_cam = bpy.context.active_object
-    scene_cam.name = "Overview_Camera"
-    scene_cam.rotation_euler = (math.radians(50), 0, math.radians(-35))
-    bpy.context.scene.camera = scene_cam
-
-setup_rescueswarm_arena()
+setup_complete_scene()
