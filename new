@@ -31,7 +31,6 @@ if hasattr(scene, 'eevee'):
 scene.view_settings.view_transform = 'Filmic'
 scene.view_settings.look = 'High Contrast'
 
-# Bright Daylight World Sky Dome
 world = scene.world
 if not world:
     world = bpy.data.worlds.new("IndustrialWorld")
@@ -206,7 +205,7 @@ build_conveyor("Conveyor_F1_Side", center_x=-3.0, center_y=7.5, center_z=0.6, le
 build_conveyor("Conveyor_F2_Center", center_x=13.0, center_y=0.0, center_z=4.6, length=36.0, width=1.35)
 
 # -------------------------------------------------------------
-# 6. Open Escalators (Side Walls Completely Removed)
+# 6. Open Escalators (No Side Enclosure Walls)
 # -------------------------------------------------------------
 ESC_DY = 7.5
 ESC_DZ = 4.0
@@ -216,7 +215,6 @@ ESC_LEN = math.sqrt(ESC_DY**2 + ESC_DZ**2)
 escalator_x_positions = [-3.0, 3.0]
 
 for idx, ex in enumerate(escalator_x_positions):
-    # Only the lower machinery conveyor bed remains
     bpy.ops.mesh.primitive_cube_add(size=1, location=(ex, ESC_DY / 2, 2.6))
     esc_bed = bpy.context.active_object
     esc_bed.name = f"Escalator_{idx+1}_Bed"
@@ -225,7 +223,6 @@ for idx, ex in enumerate(escalator_x_positions):
     esc_bed.data.materials.append(mat_machinery_green)
     apply_bevel(esc_bed, 0.02)
 
-    # 12 hazard-striped moving steps without side enclosure walls
     for i in range(12):
         ratio = (i + 0.5) / 12
         sy = ESC_DY - (ratio * ESC_DY)
@@ -256,7 +253,6 @@ for idx, fx in enumerate(furnace_positions):
     hearth.data.materials.append(mat_furnace_oxide)
     apply_bevel(hearth, 0.04)
 
-    # Rectangular Upper Stack (No round dome)
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx, 4.8, 6.6))
     stack_rect = bpy.context.active_object
     stack_rect.name = f"Furnace_StackRect_{idx+1}"
@@ -264,7 +260,6 @@ for idx, fx in enumerate(furnace_positions):
     stack_rect.data.materials.append(mat_furnace_mantle)
     apply_bevel(stack_rect, 0.03)
 
-    # Flat Top Heavy Steel Cap / Hood
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx, 4.8, 8.1))
     hood_flat = bpy.context.active_object
     hood_flat.name = f"Furnace_FlatHood_{idx+1}"
@@ -272,7 +267,6 @@ for idx, fx in enumerate(furnace_positions):
     hood_flat.data.materials.append(mat_cast_steel)
     apply_bevel(hood_flat, 0.02)
 
-    # Dual Square Flues
     for chimney_x in [-1.5, 1.5]:
         bpy.ops.mesh.primitive_cube_add(size=1, location=(fx + chimney_x, 4.8, 9.6))
         flue = bpy.context.active_object
@@ -291,14 +285,12 @@ for idx, fx in enumerate(furnace_positions):
     throat.scale = (5.8, 1.8, 1.25)
     throat.data.materials.append(mat_furnace_oxide)
 
-    # Center Mullion Post
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx, 1.3, 4.8))
     div_post = bpy.context.active_object
     div_post.name = f"Door_Mullion_Post_{idx+1}"
     div_post.scale = (0.18, 0.28, 1.25)
     div_post.data.materials.append(mat_cast_steel)
 
-    # Split Gate: Left & Right Doors
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx - 1.35, 1.3, 4.8))
     door_left = bpy.context.active_object
     door_left.name = f"Blast_Door_{idx+1}_Left"
@@ -315,7 +307,6 @@ for idx, fx in enumerate(furnace_positions):
 
     doors_pair_list.append((door_left, door_right))
 
-    # Hydraulic Pusher Stator Base
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx, -3.2, 4.8))
     stator = bpy.context.active_object
     stator.name = f"Pusher_Stator_{idx+1}"
@@ -373,7 +364,7 @@ overhead_pipe.rotation_euler = (0, math.radians(90), 0)
 overhead_pipe.data.materials.append(mat_copper_pipe)
 
 # -------------------------------------------------------------
-# 9. Central SCADA Server Rack & Laptop Operator Station
+# 9. SCADA Server Rack & Laptop Operator Station
 # -------------------------------------------------------------
 SERVER_X = 8.5
 SERVER_Y = -3.8
@@ -473,6 +464,7 @@ text_esc2 = make_screen_text("Screen_Log_Esc2", "BLK-B: LOT-912 | ID#332", 0.01,
 text_f1   = make_screen_text("Screen_Log_Furnace1", "DUAL GATE FEED: BOTH OPEN", 0.01, -0.20, 0.021, mat_scada_text_cyan)
 text_f2   = make_screen_text("Screen_Log_Furnace2", "10GbE NETWORK: ALL CAMERAS OK", 0.01, -0.34, 0.021, mat_scada_text_cyan)
 
+# Static Dashboard Camera
 bpy.ops.object.camera_add(location=(LAP_X, LAP_Y - 0.45, LAP_Z + 0.32), rotation=(math.radians(65), 0, 0))
 cam_laptop_dash = bpy.context.active_object
 cam_laptop_dash.name = "Camera_Operator_Dashboard"
@@ -526,7 +518,7 @@ build_network_wire(
 )
 
 # -------------------------------------------------------------
-# 11. High-Detail Cognex Blue Vision Camera Rig
+# 11. High-Detail Cognex Blue Vision Camera Rig Helper
 # -------------------------------------------------------------
 def align_obj_to_target(obj, target_loc):
     direction = mathutils.Vector(target_loc) - obj.location
@@ -590,28 +582,23 @@ def build_high_detail_camera_rig(name, pos, target_loc, gantry_beam_loc):
     build_network_wire(f"Wire_{name}_ToServer", back_loc, (SERVER_X, SERVER_Y, SERVER_Z + 1.8), mat_cat6a_cable)
 
 # -------------------------------------------------------------
-# 12. Lowered Escalator Vision Stations (Brought Down to Slope)
-# Cameras positioned at Z = 4.25 (closer, aimed straight at block on slope)
+# 12. Lowered Escalator Vision Stations (Targeting Slope)
 # -------------------------------------------------------------
 for esc_num, ex_pos in [(1, -3.0), (2, 3.0)]:
-    # Lower, compact gantry posts
     for side_x in [ex_pos - 2.1, ex_pos + 2.1]:
         bpy.ops.mesh.primitive_cylinder_add(radius=0.045, depth=2.8, location=(side_x, 1.2, 3.9))
         col = bpy.context.active_object
         col.name = f"Gantry_Col_Esc{esc_num}_{side_x}"
         col.data.materials.append(mat_safety_yellow)
 
-    # Overhead gantry cross beam dropped to Z = 5.30
     bpy.ops.mesh.primitive_cube_add(size=1, location=(ex_pos, 1.2, 5.30))
     cross_bar = bpy.context.active_object
     cross_bar.scale = (4.4, 0.12, 0.12)
     cross_bar.data.materials.append(mat_safety_yellow)
 
-    # Target: Narrow end faces while the block pauses on the upper incline slope
     face_lead_end_loc  = (ex_pos + 1.15, 1.2, 4.16)
     face_trail_end_loc = (ex_pos - 1.15, 1.2, 4.16)
 
-    # Cameras brought down and closer to the escalator: Z = 4.30, closer lateral span
     pos_cam_lead  = (ex_pos + 2.0, 1.2, 4.30)
     pos_cam_trail = (ex_pos - 2.0, 1.2, 4.30)
 
@@ -693,9 +680,6 @@ for f_idx, fx in enumerate(furnace_positions):
         f_ocr_light.data.spot_blend = 0.2
         f_ocr_light.data.color = (0.95, 0.98, 1.0)
 
-# Default to the lowered Escalator 2 Lead camera
-scene.camera = bpy.data.objects.get("Camera_OCR_Esc2_LeadEnd")
-
 # -------------------------------------------------------------
 # 14. Embedded Stamped Number Attachment
 # -------------------------------------------------------------
@@ -756,7 +740,7 @@ def add_stamped_id_to_end_faces(parent_block, block_num):
     text_trail.scale = (1.0 / 0.58, 1.0 / 0.36, 1.0 / 2.3)
 
 # -------------------------------------------------------------
-# 15. Sequential Animation Timeline (Inspection Stop on the Slope)
+# 15. Multi-Block Sequential Animation Timeline
 # -------------------------------------------------------------
 def set_loc_key(obj, frame, loc):
     obj.location = loc
@@ -775,9 +759,9 @@ scene.frame_end = 560
 
 PAIR_CYCLE_INTERVAL = 140
 TRAVEL_F1_BASE      = 35
-RIDE_TO_SLOPE_STOP  = 28  # Ascends to upper slope
-STOP_DURATION       = 24  # 1-second OCR pause right on the slope incline
-CREST_TIME          = 8   # Completes ascent onto 2nd floor level
+RIDE_TO_SLOPE_STOP  = 28
+STOP_DURATION       = 24
+CREST_TIME          = 8
 PUSH_STROKE         = 24
 MELT_TIME           = 25
 RETRACT_TIME        = 16
@@ -827,24 +811,24 @@ for pair_idx in range(NUM_PAIRS):
         set_loc_key(block, t_reach_esc, (esc_x, 7.5, 0.8))
         set_rot_key(block, t_reach_esc, (0, 0, 0))
 
-        # 2. Ascend and STOP RIGHT ON THE ESCALATOR SLOPE (Y = 1.2, Z = 4.16, tilted)
+        # 2. Ascend to Escalator Slope Stop
         t_reach_slope_stop = t_reach_esc + RIDE_TO_SLOPE_STOP
         set_rot_key(block, t_reach_esc + 3, (-ESC_ANGLE, 0, 0))
         set_rot_key(block, t_reach_slope_stop, (-ESC_ANGLE, 0, 0))
         set_loc_key(block, t_reach_slope_stop, (esc_x, 1.2, 4.16))
 
-        # 3. 1-SECOND INSPECTION STOP DIRECTLY ON THE SLOPE IN FRONT OF LOWERED CAMERAS
+        # 3. 1-SECOND INSPECTION STOP ON THE SLOPE
         t_resume_slope = t_reach_slope_stop + STOP_DURATION
         set_loc_key(block, t_resume_slope, (esc_x, 1.2, 4.16))
         set_rot_key(block, t_resume_slope, (-ESC_ANGLE, 0, 0))
 
-        # 4. Finish the remaining climb to top landing and level out onto 2nd Floor
+        # 4. Finish Climb & Transition to 2nd Floor Level
         t_crest_esc = t_resume_slope + CREST_TIME
         set_rot_key(block, t_crest_esc - 2, (-ESC_ANGLE, 0, 0))
         set_rot_key(block, t_crest_esc, (0, 0, 0))
         set_loc_key(block, t_crest_esc, (esc_x, 0.0, 4.8))
 
-        # 5. Travel along 2nd Floor Conveyor to Stage at Furnace
+        # 5. Travel Along 2nd Floor to Target Furnace
         target_staging_x = furnace_x + pair_x_offset
         dist_to_furnace = abs(target_staging_x - esc_x)
         t_reach_furnace = t_crest_esc + int(dist_to_furnace * 2.1)
@@ -860,7 +844,7 @@ for pair_idx in range(NUM_PAIRS):
     keyframe_pusher_assembly(p, rods_for_station, t_pair_start,  PARKED_RAM_Y)
     keyframe_pusher_assembly(p, rods_for_station, t_pair_staged, PARKED_RAM_Y)
 
-    # 6. Both Split Blast Doors Open Simultaneously
+    # 6. Both Split Doors Open
     t_door_open_start = t_pair_staged
     t_door_open_end   = t_door_open_start + 8
     set_loc_key(door_left, t_door_open_start, (furnace_x - 1.35, 1.3, 4.8))
@@ -887,7 +871,7 @@ for pair_idx in range(NUM_PAIRS):
     t_retract_end = t_inside + RETRACT_TIME
     keyframe_pusher_assembly(p, rods_for_station, t_retract_end, PARKED_RAM_Y)
 
-    # 8. Both Split Blast Doors Close
+    # 8. Both Split Doors Close
     t_door_close_start = t_inside + 4
     t_door_close_end   = t_door_close_start + 8
     set_loc_key(door_left, t_door_close_start, (furnace_x - 1.35, 1.3, 6.2))
@@ -926,7 +910,51 @@ if len(generated_lot_records) >= 4:
     text_f2.data.body   = f"FEED SYNC: INGESTION COMPLETE"
 
 # -------------------------------------------------------------
-# 17. Version-Safe Linear Keyframe Interpolation
+# 17. Cinematic Fly-Through Render Camera System
+# Sweeps across the factory and frames the live telemetry laptop screen
+# -------------------------------------------------------------
+bpy.ops.object.camera_add(location=(-14.0, 14.0, 5.0))
+cinematic_cam = bpy.context.active_object
+cinematic_cam.name = "Cinematic_Production_Camera"
+cinematic_cam.data.lens = 32
+cinematic_cam.data.clip_end = 250.0
+
+# 5 Sequential Film Camera Shots (Frame 1 to Frame 560):
+# Shot 1 (Frames 1 - 90): Wide Tracking shot along 1st floor infeed conveyor & escalator bases
+set_loc_key(cinematic_cam, 1,   (-16.0, 14.0, 4.5))
+set_rot_key(cinematic_cam, 1,   (math.radians(75), 0, math.radians(-140)))
+set_loc_key(cinematic_cam, 90,  (-1.0, 12.0, 4.8))
+set_rot_key(cinematic_cam, 90,  (math.radians(72), 0, math.radians(-130)))
+
+# Shot 2 (Frames 91 - 180): Low-angle Escalator OCR slope inspection station view
+set_loc_key(cinematic_cam, 91,  (3.0, 4.8, 6.2))
+set_rot_key(cinematic_cam, 91,  (math.radians(52), 0, math.radians(-170)))
+set_loc_key(cinematic_cam, 180, (4.8, -2.4, 5.4))
+set_rot_key(cinematic_cam, 180, (math.radians(65), 0, math.radians(-110)))
+
+# Shot 3 (Frames 181 - 290): High Crane Tracking along 2nd floor conveyor & double blast gates
+set_loc_key(cinematic_cam, 181, (8.0, -8.5, 9.8))
+set_rot_key(cinematic_cam, 181, (math.radians(58), 0, math.radians(18)))
+set_loc_key(cinematic_cam, 290, (18.5, -6.5, 8.2))
+set_rot_key(cinematic_cam, 290, (math.radians(62), 0, math.radians(28)))
+
+# Shot 4 (Frames 291 - 420): Blast furnace infeed, hydraulic pusher stroke & smelting action
+set_loc_key(cinematic_cam, 291, (10.2, 0.6, 5.8))
+set_rot_key(cinematic_cam, 291, (math.radians(75), 0, math.radians(-65)))
+set_loc_key(cinematic_cam, 420, (17.5, 0.4, 5.8))
+set_rot_key(cinematic_cam, 420, (math.radians(75), 0, math.radians(-75)))
+
+# Shot 5 (Frames 421 - 560): Glide over to the Operator Workstation and punch in close on the Laptop Screen
+set_loc_key(cinematic_cam, 421, (6.7, -6.0, 6.2))
+set_rot_key(cinematic_cam, 421, (math.radians(60), 0, 0))
+set_loc_key(cinematic_cam, 560, (LAP_X, LAP_Y - 0.45, LAP_Z + 0.32))
+set_rot_key(cinematic_cam, 560, (math.radians(65), 0, 0))
+
+# Make the moving cinematic camera active for rendering
+scene.camera = cinematic_cam
+
+# -------------------------------------------------------------
+# 18. Version-Safe Linear Keyframe Interpolation
 # -------------------------------------------------------------
 def set_linear_interpolation(obj):
     if not obj.animation_data or not obj.animation_data.action:
@@ -955,7 +983,7 @@ for obj in bpy.data.objects:
     set_linear_interpolation(obj)
 
 # -------------------------------------------------------------
-# 18. Balanced Daylight Ambient & Factory Illumination
+# 19. Balanced Daylight Ambient & Factory Illumination
 # -------------------------------------------------------------
 bpy.ops.object.light_add(type='SUN', location=(-6.0, -8.0, 26.0))
 sun = bpy.context.active_object
@@ -977,7 +1005,7 @@ for bay_x in [-3.0, 3.0, 10.0, 18.0]:
     bay_light.data.color = (0.95, 0.98, 1.0)
 
 # -------------------------------------------------------------
-# 19. Automatically Configure 3D Viewport to Display Materials
+# 20. Viewport Configuration & Output Settings
 # -------------------------------------------------------------
 for area in bpy.context.screen.areas:
     if area.type == 'VIEW_3D':
