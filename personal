@@ -1,0 +1,121 @@
+import bpy
+import random
+import math
+
+def clean_scene():
+    bpy.ops.object.select_all(action='SELECT')
+    bpy.ops.object.delete(use_global=False)
+
+def create_material(name, diffuse_color, roughness=0.5, metallic=0.0):
+    mat = bpy.data.materials.get(name)
+    if mat is None:
+        mat = bpy.data.materials.new(name=name)
+        mat.use_nodes = True
+        bsdf = mat.node_tree.nodes.get("Principled BSDF")
+        bsdf.inputs['Base Color'].default_value = diffuse_color
+        bsdf.inputs['Roughness'].default_value = roughness
+        bsdf.inputs['Metallic'].default_value = metallic
+    return mat
+
+def setup_rescueswarm_arena():
+    clean_scene()
+    
+    # Materials
+    mat_terrain = create_material("MudTerrain", (0.22, 0.15, 0.08, 1.0), roughness=0.9)
+    mat_water = create_material("FloodWater", (0.05, 0.2, 0.25, 1.0), roughness=0.1, metallic=0.2)
+    mat_pad = create_material("LaunchPad", (0.8, 0.7, 0.1, 1.0), roughness=0.4)
+    mat_house = create_material("DamagedHouse", (0.4, 0.4, 0.45, 1.0), roughness=0.8)
+    mat_survivor = create_material("Survivor", (0.9, 0.1, 0.0, 1.0), roughness=0.3)
+    mat_drone = create_material("DroneFrame", (0.1, 0.1, 0.1, 1.0), roughness=0.2, metallic=0.8)
+    mat_kit = create_material("SurvivorKit", (0.9, 0.9, 0.9, 1.0), roughness=0.3)
+
+    # 1. 10-Hectare Terrain (100,000 m^2 = ~316.2m x 316.2m)
+    side_len = 316.23
+    bpy.ops.mesh.primitive_plane_add(size=side_len, location=(0, 0, 0))
+    terrain = bpy.context.active_object
+    terrain.name = "10Ha_Search_Arena"
+    terrain.data.materials.append(mat_terrain)
+    
+    # Add subdivision and displace for river basin contours
+    bpy.ops.object.modifier_add(type='SUBSURF')
+    terrain.modifiers["Subdivision"].levels = 3
+    
+    # 2. Floodwater plane across semi-urban river basin
+    bpy.ops.mesh.primitive_plane_add(size=side_len * 1.02, location=(0, 0, 0.3))
+    water = bpy.context.active_object
+    water.name = "RiverBasin_FloodWater"
+    water.data.materials.append(mat_water)
+
+    # 3. Designated Launch/Landing Area: 12ft x 12ft (3.66m x 3.66m)
+    pad_dim = 12 * 0.3048  # 3.6576 m
+    bpy.ops.mesh.primitive_plane_add(size=pad_dim, location=(-side_len/2 + 20, -side_len/2 + 20, 0.35))
+    launch_pad = bpy.context.active_object
+    launch_pad.name = "Launch_Landing_Zone_12x12ft"
+    launch_pad.data.materials.append(mat_pad)
+
+    # 4. Inaccessible Semi-Urban Settlements (Houses/Ruins)
+    random.seed(42)
+    for i in range(25):
+        hx = random.uniform(-side_len/2 + 30, side_len/2 - 30)
+        hy = random.uniform(-side_len/2 + 30, side_len/2 - 30)
+        sx, sy, sz = random.uniform(6, 12), random.uniform(6, 10), random.uniform(3, 7)
+        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(hx, hy, sz/2))
+        house = bpy.context.active_object
+        house.scale = (sx, sy, sz)
+        house.name = f"Structure_{i+1}"
+        house.data.materials.append(mat_house)
+
+    # 5. Place 10 Survivors (dummies / humans to geotag)
+    for s_idx in range(10):
+        sx = random.uniform(-side_len/2 + 35, side_len/2 - 35)
+        sy = random.uniform(-side_len/2 + 35, side_len/2 - 35)
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.3, depth=1.7, location=(sx, sy, 0.85))
+        survivor = bpy.context.active_object
+        survivor.name = f"Survivor_Target_{s_idx+1}"
+        survivor.data.materials.append(mat_survivor)
+
+    # 6. Build Swarm of 3 Autonomous Multirotors (PS1 requires >= 2)
+    drone_positions = [
+        (-side_len/2 + 19, -side_len/2 + 19, 0.8),
+        (-side_len/2 + 20, -side_len/2 + 20, 0.8),
+        (-side_len/2 + 21, -side_len/2 + 21, 0.8),
+    ]
+
+    for d_idx, pos in enumerate(drone_positions):
+        # Drone Base Hub
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.35, depth=0.1, location=pos)
+        drone = bpy.context.active_object
+        drone.name = f"RescueSwarm_Drone_{d_idx+1}"
+        drone.data.materials.append(mat_drone)
+        
+        # Survivor Kit Payload: 20cm x 10cm x 5cm (0.2 x 0.1 x 0.05m)
+        bpy.ops.mesh.primitive_cube_add(
+            size=1.0, 
+            location=(pos[0], pos[1], pos[2] - 0.1)
+        )
+        kit = bpy.context.active_object
+        kit.scale = (0.2, 0.1, 0.05)
+        kit.name = f"Kit_200g_Drone_{d_idx+1}"
+        kit.data.materials.append(mat_kit)
+        kit.parent = drone
+
+        # Downward Sensing / Vision Camera
+        cam_data = bpy.data.cameras.new(name=f"Camera_Drone_{d_idx+1}")
+        cam_obj = bpy.data.objects.new(f"SensorCam_Drone_{d_idx+1}", cam_data)
+        bpy.context.collection.objects.link(cam_obj)
+        cam_obj.location = (pos[0], pos[1], pos[2] - 0.05)
+        cam_obj.rotation_euler = (math.radians(180), 0, 0)
+        cam_obj.parent = drone
+
+    # Sun & Overview Camera
+    bpy.ops.object.light_add(type='SUN', location=(0, 0, 100))
+    sun = bpy.context.active_object
+    sun.data.energy = 3.5
+
+    bpy.ops.object.camera_add(location=(-120, -180, 140))
+    scene_cam = bpy.context.active_object
+    scene_cam.name = "Overview_Camera"
+    scene_cam.rotation_euler = (math.radians(50), 0, math.radians(-35))
+    bpy.context.scene.camera = scene_cam
+
+setup_rescueswarm_arena()
