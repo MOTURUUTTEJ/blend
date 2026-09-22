@@ -42,7 +42,7 @@ if bg_node:
     bg_node.inputs['Strength'].default_value = 2.0
 
 # -------------------------------------------------------------
-# 3. Global Helpers & Industrial Material Suite (All Definitions First)
+# 3. Global Helpers & Industrial Material Suite
 # -------------------------------------------------------------
 def apply_bevel(obj, width=0.03, segments=2):
     mod = obj.modifiers.new(name="Bevel", type='BEVEL')
@@ -120,7 +120,7 @@ def make_tinted_glass_mat(name):
         mat.blend_method = 'BLEND'
     return mat
 
-# Base Materials
+# Materials
 mat_epoxy_floor      = make_mat("IndustrialEpoxyFloor", (0.32, 0.35, 0.38, 1.0), metallic=0.08, roughness=0.35)
 mat_mezzanine_floor  = make_mat("Industrial1stFloorMezz", (0.24, 0.26, 0.29, 1.0), metallic=0.45, roughness=0.42)
 mat_safety_walkway   = make_mat("FloorSafetyBorderWalk", (0.85, 0.55, 0.02, 1.0),  metallic=0.02, roughness=0.6)
@@ -133,43 +133,31 @@ mat_conveyor_rubber  = make_mat("ReinforcedBlackRubber", (0.08, 0.08, 0.09, 1.0)
 mat_roller_chrome    = make_mat("HardRollerChrome",      (0.90, 0.92, 0.94, 1.0),   metallic=0.98, roughness=0.05)
 mat_copper_pipe      = make_mat("IndustrialOxidizedCopper",(0.78, 0.32, 0.14, 1.0), metallic=0.94, roughness=0.24)
 mat_wall_corrugated  = make_mat("CorrugatedWallPanels",  (0.42, 0.45, 0.48, 1.0),   metallic=0.72, roughness=0.48)
-
-# Pulpit Materials
 mat_pulpit_body      = make_mat("PulpitGreyBlueSteel",   (0.24, 0.32, 0.38, 1.0),   metallic=0.75, roughness=0.45)
 mat_pulpit_dark      = make_mat("PulpitUnderbodySteel",  (0.14, 0.16, 0.18, 1.0),   metallic=0.88, roughness=0.55)
 mat_pulpit_glass     = make_tinted_glass_mat("PulpitLaminatedGlass")
 mat_stencil_yellow   = make_mat("PulpitStencilYellow",   (0.95, 0.72, 0.08, 1.0),   metallic=0.10, roughness=0.4)
 mat_heat_shield      = make_mat("PulpitReflectiveShield",(0.82, 0.85, 0.88, 1.0),   metallic=0.95, roughness=0.15)
-
-# Office Materials
 mat_office_wall      = make_mat("ExecutiveOfficeWall",   (0.85, 0.87, 0.90, 1.0),   metallic=0.15, roughness=0.30)
 mat_office_ceiling   = make_mat("AcousticCeilingTiles",  (0.92, 0.93, 0.94, 1.0),   metallic=0.02, roughness=0.75)
 mat_office_carpet    = make_mat("OfficeCommercialCarpet",(0.15, 0.18, 0.22, 1.0),   metallic=0.01, roughness=0.92)
 mat_wood_desk        = make_mat("ExecutiveWoodMahogany", (0.28, 0.12, 0.06, 1.0),   metallic=0.05, roughness=0.32)
 mat_whiteboard       = make_mat("DryEraseWhiteboard",    (0.96, 0.97, 0.98, 1.0),   metallic=0.02, roughness=0.08)
-
-# Machine Vision Hardware Materials
 mat_vision_blue      = make_mat("CognexIndustrialBlue",  (0.02, 0.22, 0.65, 1.0),   metallic=0.85, roughness=0.22)
 mat_cam_barrel       = make_mat("LensAnodizedBlack",     (0.04, 0.04, 0.05, 1.0),   metallic=0.70, roughness=0.35)
 mat_vision_lens      = make_mat("AntiReflectiveLensGlass",(0.005, 0.015, 0.02, 1.0), metallic=0.98, roughness=0.02)
 mat_lens_ring_led    = make_mat("VisionLEDStrobeRing",   (0.96, 0.98, 1.0, 1.0),    emission=(0.96, 0.98, 1.0, 1.0), emission_strength=18.0)
 mat_gantry_silver    = make_mat("BrushedAluminum",       (0.70, 0.72, 0.74, 1.0),   metallic=0.95, roughness=0.18)
-
-# Metallurgy & Furnace Materials
 mat_furnace_oxide    = make_mat("FurnaceHematiteRust",   (0.28, 0.10, 0.06, 1.0),   metallic=0.38, roughness=0.82)
 mat_furnace_mantle   = make_mat("CharcoalHeatShield",    (0.10, 0.11, 0.12, 1.0),   metallic=0.85, roughness=0.55)
 mat_molten_iron      = make_mat("MoltenIronBathCore",    (1.0, 0.25, 0.01, 1.0),    emission=(1.0, 0.28, 0.02, 1.0), emission_strength=32.0)
 mat_engrave_base     = make_mat("MilledSteelCavity",     (0.05, 0.05, 0.06, 1.0),   metallic=0.85, roughness=0.80)
-
-# Rolling Mill & Cooling System Materials
 mat_mill_housing     = make_mat("MillStandDeepBlue",     (0.04, 0.15, 0.28, 1.0),   metallic=0.85, roughness=0.35)
 mat_chock_steel      = make_mat("HeavyMillChockSteel",   (0.18, 0.20, 0.22, 1.0),   metallic=0.92, roughness=0.28)
 mat_spray_hood       = make_mat("StainlessSprayHood",    (0.68, 0.70, 0.72, 1.0),   metallic=0.90, roughness=0.20)
 mat_water_spray      = make_mat("CoolingWaterMist",      (0.80, 0.92, 1.0, 0.35),   metallic=0.05, roughness=0.1)
 if hasattr(mat_water_spray, 'blend_method'):
     mat_water_spray.blend_method = 'BLEND'
-
-# Operator Workstation Materials
 mat_desk_top         = make_mat("WorkstationDeskMat",    (0.15, 0.17, 0.19, 1.0),   metallic=0.40, roughness=0.60)
 mat_laptop_shell     = make_mat("MagnesiumAlloyShell",   (0.12, 0.13, 0.14, 1.0),   metallic=0.92, roughness=0.26)
 mat_laptop_body      = make_mat("LaptopChassisMat",      (0.08, 0.085, 0.09, 1.0),  metallic=0.90, roughness=0.25)
@@ -178,9 +166,6 @@ mat_scada_screen_bg  = make_mat("SCADA_DisplayDarkNavy", (0.005, 0.015, 0.035, 1
 mat_scada_text_cyan  = make_mat("SCADA_TelemetryCyan",   (0.12, 0.85, 1.0, 1.0),    emission=(0.12, 0.85, 1.0, 1.0), emission_strength=16.0)
 mat_scada_text_green = make_mat("SCADA_TelemetryGreen",  (0.15, 1.0, 0.35, 1.0),    emission=(0.15, 1.0, 0.35, 1.0), emission_strength=18.0)
 
-# -------------------------------------------------------------
-# CONVEYOR BUILDER HELPER (Defined here before any calls)
-# -------------------------------------------------------------
 def build_conveyor(name, center_x, center_y, center_z, length=9.0, width=1.35):
     bpy.ops.mesh.primitive_cube_add(size=1, location=(center_x, center_y, center_z))
     bed = bpy.context.active_object
@@ -231,7 +216,6 @@ FURNACE_FRONT_Y = 2.2
 FURNACE_REAR_Y  = 20.8
 REAR_CONVEYOR_Y = 21.8
 
-# Ground Floor
 bpy.ops.mesh.primitive_plane_add(size=200.0, location=(14.0, 0.0, 0.0))
 ground_slab = bpy.context.active_object
 ground_slab.name = "Ground_Factory_Floor"
@@ -242,7 +226,6 @@ walk_line_ground = bpy.context.active_object
 walk_line_ground.scale = (140.0, 0.15, 0.01)
 walk_line_ground.data.materials.append(mat_safety_walkway)
 
-# 1st Floor Operating Mezzanine Deck (Z = 4.45)
 bpy.ops.mesh.primitive_cube_add(size=1, location=(34.0, 12.0, 4.45))
 first_floor_main = bpy.context.active_object
 first_floor_main.name = "First_Floor_Main_Deck"
@@ -398,7 +381,7 @@ cam_office_eye.data.clip_end = 300.0
 align_obj_to_target(cam_office_eye, (19.0, 6.0, 5.0))
 
 # -------------------------------------------------------------
-# 6. Conveyor Placements (Calls defined build_conveyor safely)
+# 6. Conveyor Placements
 # -------------------------------------------------------------
 build_conveyor("Conveyor_Ground_Infeed", center_x=-3.0, center_y=7.5, center_z=0.6, length=22.0, width=1.35)
 build_conveyor("Conveyor_1stFloor_Staging", center_x=16.0, center_y=0.0, center_z=4.6, length=41.0, width=1.35)
@@ -655,55 +638,80 @@ for s_idx, mx in enumerate(mill_stand_positions):
     spindle.data.materials.append(mat_cast_steel)
 
 # -------------------------------------------------------------
-# 11. Self-Contained Wireless Cognex Vision Rig Helper
+# 11. Laptop Workstation & Screen Log Objects Setup
 # -------------------------------------------------------------
-def build_high_detail_camera_rig(name, pos, target_loc, gantry_beam_loc):
-    direction = (mathutils.Vector(target_loc) - mathutils.Vector(pos)).normalized()
-    rot_quat = direction.to_track_quat('-Z', 'Y')
-    rot_euler = rot_quat.to_euler()
+DESK_X = 9.7
+DESK_Y = -12.0
+DESK_Z = 4.45
 
-    drop_len = abs(gantry_beam_loc[2] - pos[2])
-    stem_center = (pos[0], pos[1], pos[2] + drop_len / 2)
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.035, depth=drop_len, location=stem_center)
-    arm = bpy.context.active_object
-    arm.data.materials.append(mat_gantry_silver)
+bpy.ops.mesh.primitive_cube_add(size=1, location=(DESK_X, DESK_Y, DESK_Z))
+desk = bpy.context.active_object
+desk.name = "Operator_Workstation_Desk"
+desk.scale = (1.2, 1.0, 0.06)
+desk.data.materials.append(mat_desk_top)
 
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.08, depth=0.10, location=pos)
-    gimbal = bpy.context.active_object
-    gimbal.rotation_euler = rot_euler
-    gimbal.data.materials.append(mat_cast_steel)
+for dx, dy in [(-0.55, -0.45), (-0.55, 0.45), (0.55, -0.45), (0.55, 0.45)]:
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.03, depth=DESK_Z, location=(DESK_X + dx, DESK_Y + dy, DESK_Z / 2))
+    leg = bpy.context.active_object
+    leg.data.materials.append(mat_cast_steel)
 
-    bpy.ops.mesh.primitive_cube_add(size=1, location=pos)
-    cam_box = bpy.context.active_object
-    cam_box.scale = (0.24, 0.32, 0.22)
-    cam_box.rotation_euler = rot_euler
-    cam_box.data.materials.append(mat_vision_blue)
-    apply_bevel(cam_box, 0.015)
+LAP_X = DESK_X
+LAP_Y = DESK_Y + 0.05
+LAP_Z = DESK_Z + 0.04
 
-    lens_loc = mathutils.Vector(pos) + (direction * 0.20)
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.08, depth=0.18, location=lens_loc)
-    lens_barrel = bpy.context.active_object
-    lens_barrel.rotation_euler = rot_euler
-    lens_barrel.data.materials.append(mat_cam_barrel)
+bpy.ops.mesh.primitive_cube_add(size=1, location=(LAP_X, LAP_Y, LAP_Z))
+lap_base = bpy.context.active_object
+lap_base.name = "Laptop_Chassis_Base"
+lap_base.scale = (0.52, 0.36, 0.018)
+lap_base.data.materials.append(mat_laptop_shell)
 
-    aperture_loc = mathutils.Vector(pos) + (direction * 0.29)
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.065, depth=0.02, location=aperture_loc)
-    front_element = bpy.context.active_object
-    front_element.rotation_euler = rot_euler
-    front_element.data.materials.append(mat_vision_lens)
+bpy.ops.mesh.primitive_cube_add(size=1, location=(LAP_X, LAP_Y - 0.03, LAP_Z + 0.01))
+lap_kb = bpy.context.active_object
+lap_kb.name = "Laptop_Keyboard_Tray"
+lap_kb.scale = (0.46, 0.22, 0.005)
+lap_kb.data.materials.append(mat_laptop_body)
 
-    ring_loc = mathutils.Vector(pos) + (direction * 0.30)
-    bpy.ops.mesh.primitive_torus_add(major_radius=0.11, minor_radius=0.02, location=ring_loc)
-    ring_light = bpy.context.active_object
-    ring_light.rotation_euler = rot_euler
-    ring_light.data.materials.append(mat_lens_ring_led)
+bpy.ops.mesh.primitive_cube_add(size=1, location=(LAP_X, LAP_Y + 0.16, LAP_Z + 0.16))
+lap_lid = bpy.context.active_object
+lap_lid.name = "Laptop_Display_Lid"
+lap_lid.scale = (0.52, 0.015, 0.34)
+lap_lid.rotation_euler = (math.radians(-25), 0, 0)
+lap_lid.data.materials.append(mat_laptop_shell)
 
-    back_loc = mathutils.Vector(pos) - (direction * 0.16)
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.02, depth=0.12, location=back_loc)
-    antenna = bpy.context.active_object
-    antenna.rotation_euler = rot_euler
-    antenna.data.materials.append(mat_cast_steel)
+bpy.ops.mesh.primitive_cube_add(size=1, location=(LAP_X, LAP_Y + 0.151, LAP_Z + 0.16))
+lap_screen = bpy.context.active_object
+lap_screen.name = "Laptop_Dashboard_Screen"
+lap_screen.scale = (0.48, 0.002, 0.30)
+lap_screen.rotation_euler = (math.radians(-25), 0, 0)
+lap_screen.data.materials.append(mat_scada_screen_bg)
 
+def make_screen_text(name, body, rel_y, rel_z, size, mat):
+    font_curve = bpy.data.curves.new(type="FONT", name=f"{name}_Data")
+    font_curve.body = body
+    font_curve.size = size
+    font_curve.align_x = 'LEFT'
+    font_curve.align_y = 'CENTER'
+    text_obj = bpy.data.objects.new(name=name, object_data=font_curve)
+    text_obj.data.materials.append(mat)
+    bpy.context.collection.objects.link(text_obj)
+    text_obj.parent = lap_screen
+    text_obj.location = (-0.46, rel_y, rel_z)
+    text_obj.rotation_euler = (math.radians(90), 0, 0)
+    text_obj.scale = (1.0 / lap_screen.scale.x, 1.0 / lap_screen.scale.z, 1.0 / lap_screen.scale.y)
+    return text_obj
+
+make_screen_text("Screen_Header", "EXTENDED TUNNEL FURNACE LINE", 0.01, 0.36, 0.024, mat_scada_text_cyan)
+make_screen_text("Screen_Divider", "--------------------------------------", 0.01, 0.27, 0.020, mat_scada_text_cyan)
+
+# Assigned globally so Section 16 can access and update them
+text_esc1 = make_screen_text("Screen_Log_Esc1", "BLK-A: LOT-104 | ID#841", 0.01, 0.12, 0.021, mat_scada_text_green)
+text_esc2 = make_screen_text("Screen_Log_Esc2", "BLK-B: LOT-912 | ID#332", 0.01, -0.04, 0.021, mat_scada_text_green)
+text_f1   = make_screen_text("Screen_Log_Furnace1", "HEATING TUNNEL: 18.0M | SOAK: 75F", 0.01, -0.20, 0.021, mat_scada_text_cyan)
+text_f2   = make_screen_text("Screen_Log_Furnace2", "BILLET CORE: HOMOGENIZED 1250C", 0.01, -0.34, 0.021, mat_scada_text_cyan)
+
+# -------------------------------------------------------------
+# 12. Wireless Cognex Vision Rig Helper & Stations
+# -------------------------------------------------------------
 # Escalator Vision Stations
 for esc_num, ex_pos in [(1, -3.0), (2, 3.0)]:
     for side_x in [ex_pos - 2.1, ex_pos + 2.1]:
@@ -778,7 +786,7 @@ for f_idx, fx in enumerate(furnace_positions):
     f_ocr_light.data.color = (0.95, 0.98, 1.0)
 
 # -------------------------------------------------------------
-# 12. Modular Pulpit Cabin Generator (CP-1, CP-2, CP-3)[cite: 1, 2]
+# 13. Modular Pulpit Cabin Generator (CP-1, CP-2, CP-3)
 # -------------------------------------------------------------
 def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, facing="POS_Y", is_side_oriented=False):
     if is_side_oriented:
@@ -958,7 +966,7 @@ def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, fa
     p_light.data.color = (0.9, 0.95, 1.0)
 
 # -------------------------------------------------------------
-# 13. Build 3 Complete Pulpits & Eye Level Cameras
+# 14. Build 3 Complete Pulpits & Cameras
 # -------------------------------------------------------------
 PULPIT_BASE_Z = 5.2
 
@@ -979,7 +987,6 @@ create_control_pulpit("Pulpit_Front", "CP-2 INFEED CONTROL", center_x=27.0, cent
 # CABIN 3: CP-3 REAR DISCHARGE PULPIT
 create_control_pulpit("Pulpit_Rear", "CP-3 DISCHARGE CONTROL", center_x=27.0, center_y=29.5, base_z=PULPIT_BASE_Z, facing="NEG_Y")
 
-# Human Eye Camera 1: Inside CP-1
 bpy.ops.object.camera_add(location=(11.0, 6.8, PULPIT_BASE_Z + 1.65))
 cam_cp1_eye = bpy.context.active_object
 cam_cp1_eye.name = "Camera_Pulpit_CP1_Elevator_Eye"
@@ -987,7 +994,6 @@ cam_cp1_eye.data.lens = 24
 cam_cp1_eye.data.clip_end = 300.0
 align_obj_to_target(cam_cp1_eye, (0.0, 3.5, 4.16))
 
-# Human Eye Camera 2: Inside CP-2
 bpy.ops.object.camera_add(location=(27.0, -9.25, PULPIT_BASE_Z + 1.65))
 cam_cp2_eye = bpy.context.active_object
 cam_cp2_eye.name = "Camera_Pulpit_Front_Human_Eye"
@@ -995,7 +1001,6 @@ cam_cp2_eye.data.lens = 24
 cam_cp2_eye.data.clip_end = 300.0
 align_obj_to_target(cam_cp2_eye, (27.0, FURNACE_FRONT_Y + 2.0, 4.8))
 
-# Human Eye Camera 3: Inside CP-3
 bpy.ops.object.camera_add(location=(27.0, 28.75, PULPIT_BASE_Z + 1.65))
 cam_cp3_eye = bpy.context.active_object
 cam_cp3_eye.name = "Camera_Pulpit_Rear_Human_Eye"
@@ -1006,7 +1011,7 @@ align_obj_to_target(cam_cp3_eye, (27.0, REAR_CONVEYOR_Y, 4.8))
 scene.camera = cam_office_eye
 
 # -------------------------------------------------------------
-# 14. Embedded Stamped Number Attachment
+# 15. Embedded Stamped Number Attachment
 # -------------------------------------------------------------
 generated_lot_records = []
 
@@ -1065,7 +1070,7 @@ def add_stamped_id_to_end_faces(parent_block, block_num):
     text_trail.scale = (1.0 / 0.58, 1.0 / 0.36, 1.0 / 2.3)
 
 # -------------------------------------------------------------
-# 15. Continuous Tunnel Furnace Heating Animation Timeline
+# 16. Continuous Tunnel Furnace Heating Animation Timeline
 # -------------------------------------------------------------
 def set_loc_key(obj, frame, loc):
     obj.location = loc
@@ -1129,7 +1134,6 @@ for pair_idx in range(NUM_PAIRS):
 
         add_stamped_id_to_end_faces(block, block_id)
 
-        # Ground Floor Infeed
         set_loc_key(block, t_pair_start, (spawn_x, 7.5, 0.8))
         set_rot_key(block, t_pair_start, (0, 0, 0))
 
@@ -1137,24 +1141,20 @@ for pair_idx in range(NUM_PAIRS):
         set_loc_key(block, t_reach_esc, (esc_x, 7.5, 0.8))
         set_rot_key(block, t_reach_esc, (0, 0, 0))
 
-        # Elevator Ascent
         t_reach_slope_stop = t_reach_esc + RIDE_TO_SLOPE_STOP
         set_rot_key(block, t_reach_esc + 3, (-ESC_ANGLE, 0, 0))
         set_rot_key(block, t_reach_slope_stop, (-ESC_ANGLE, 0, 0))
         set_loc_key(block, t_reach_slope_stop, (esc_x, 1.2, 4.16))
 
-        # OCR Pause
         t_resume_slope = t_reach_slope_stop + STOP_DURATION
         set_loc_key(block, t_resume_slope, (esc_x, 1.2, 4.16))
         set_rot_key(block, t_resume_slope, (-ESC_ANGLE, 0, 0))
 
-        # Transition onto 1st Floor Staging Belt
         t_crest_esc = t_resume_slope + CREST_TIME
         set_rot_key(block, t_crest_esc - 2, (-ESC_ANGLE, 0, 0))
         set_rot_key(block, t_crest_esc, (0, 0, 0))
         set_loc_key(block, t_crest_esc, (esc_x, 0.0, 4.8))
 
-        # 1st Floor Staging Travel
         target_staging_x = furnace_x + pair_x_offset
         dist_to_furnace = abs(target_staging_x - esc_x)
         t_reach_furnace = t_crest_esc + int(dist_to_furnace * 2.1)
@@ -1167,12 +1167,10 @@ for pair_idx in range(NUM_PAIRS):
         set_loc_key(block, t_pair_staged, (furnace_x + pair_x_offset, 0.0, 4.8))
         set_rot_key(block, t_pair_staged, (0, 0, 0))
 
-    # Pull Pit staging
     keyframe_pusher_assembly(p, rods_for_station, t_pair_start,  PARKED_RAM_Y)
     keyframe_pusher_assembly(p, rods_for_station, t_pair_staged - 10, PARKED_RAM_Y)
     keyframe_pusher_assembly(p, rods_for_station, t_pair_staged, STAGING_RAM_Y)
 
-    # Front Doors Open
     t_door_open_start = t_pair_staged
     t_door_open_end   = t_door_open_start + 8
     set_loc_key(fdoor_l, t_door_open_start, (furnace_x - 1.35, FURNACE_FRONT_Y, 4.8))
@@ -1180,7 +1178,6 @@ for pair_idx in range(NUM_PAIRS):
     set_loc_key(fdoor_r, t_door_open_start, (furnace_x + 1.35, FURNACE_FRONT_Y, 4.8))
     set_loc_key(fdoor_r, t_door_open_end,   (furnace_x + 1.35, FURNACE_FRONT_Y, 6.2))
 
-    # Long Pusher Stroke into Tunnel
     t_approach_start = t_door_open_end + 1
     t_contact        = t_approach_start + 3
     keyframe_pusher_assembly(p, rods_for_station, t_approach_start, STAGING_RAM_Y)
@@ -1199,7 +1196,6 @@ for pair_idx in range(NUM_PAIRS):
     t_retract_end = t_inside + RETRACT_TIME
     keyframe_pusher_assembly(p, rods_for_station, t_retract_end, PARKED_RAM_Y)
 
-    # Front Doors Close
     t_front_close_start = t_inside + 4
     t_front_close_end   = t_front_close_start + 8
     set_loc_key(fdoor_l, t_front_close_start, (furnace_x - 1.35, FURNACE_FRONT_Y, 6.2))
@@ -1207,7 +1203,6 @@ for pair_idx in range(NUM_PAIRS):
     set_loc_key(fdoor_r, t_front_close_start, (furnace_x + 1.35, FURNACE_FRONT_Y, 6.2))
     set_loc_key(fdoor_r, t_front_close_end,   (furnace_x + 1.35, FURNACE_FRONT_Y, 4.8))
 
-    # Progressive Soaking across 18-meter tunnel
     t_zone1 = t_inside + int(HEAT_TIME * 0.25)
     t_zone2 = t_inside + int(HEAT_TIME * 0.55)
     t_zone3 = t_inside + int(HEAT_TIME * 0.85)
@@ -1242,7 +1237,6 @@ for pair_idx in range(NUM_PAIRS):
         bsdf.inputs['Base Color'].default_value = (1.0, 0.35, 0.04, 1.0)
         bsdf.inputs['Base Color'].keyframe_insert(data_path="default_value", frame=t_heat_done)
 
-    # Rear Discharge Doors Open
     t_rear_open_start = t_heat_done + 2
     t_rear_open_end   = t_rear_open_start + 8
     set_loc_key(rdoor_l, t_rear_open_start, (furnace_x - 1.35, FURNACE_REAR_Y, 4.8))
@@ -1253,7 +1247,6 @@ for pair_idx in range(NUM_PAIRS):
     t_discharge_start = t_rear_open_end + 2
     t_on_rear_belt    = t_discharge_start + 16
 
-    # Cooling Spray Tunnel Pass & Hot Rolling into Slim Rods
     t_enter_cooling   = t_on_rear_belt + 14
     t_exit_cooling    = t_enter_cooling + 10
     t_enter_rough_mill= t_exit_cooling + 8
@@ -1265,16 +1258,13 @@ for pair_idx in range(NUM_PAIRS):
         b_mat = pair_materials[slot]
         bsdf = b_mat.node_tree.nodes.get("Principled BSDF")
 
-        # Exit onto rear conveyor
         set_loc_key(block, t_discharge_start, (furnace_x + pair_x_offset, FURNACE_REAR_Y - 0.8, 4.8))
         set_loc_key(block, t_on_rear_belt,    (furnace_x + pair_x_offset, REAR_CONVEYOR_Y, 4.8))
         set_scale_key(block, t_on_rear_belt,  (2.3, 0.58, 0.36))
 
-        # Enter High-Pressure Cooling Spray Hood
         set_loc_key(block, t_enter_cooling,   (COOL_TUNNEL_X - 1.2, REAR_CONVEYOR_Y, 4.8))
         set_scale_key(block, t_enter_cooling, (2.3, 0.58, 0.36))
 
-        # Exit Cooling Hood
         set_loc_key(block, t_exit_cooling,    (COOL_TUNNEL_X + 1.2, REAR_CONVEYOR_Y, 4.8))
         set_scale_key(block, t_exit_cooling,  (2.3, 0.55, 0.34))
 
@@ -1283,25 +1273,21 @@ for pair_idx in range(NUM_PAIRS):
         bsdf.inputs['Base Color'].default_value = (0.85, 0.22, 0.05, 1.0)
         bsdf.inputs['Base Color'].keyframe_insert(data_path="default_value", frame=t_exit_cooling)
 
-        # Enter Rolling Mill Stands
         set_loc_key(block, t_enter_rough_mill, (mill_stand_positions[0], REAR_CONVEYOR_Y, 4.8))
         set_scale_key(block, t_enter_rough_mill, (3.2, 0.38, 0.26))
 
-        # Exit Final Sizing Stand as Slim Rod
         set_loc_key(block, t_finish_slim_rod, (mill_stand_positions[2] + 4.0, REAR_CONVEYOR_Y, 4.8))
         set_scale_key(block, t_finish_slim_rod, (7.5, 0.12, 0.12))
 
         bsdf.inputs['Emission Strength'].default_value = 8.0
         bsdf.inputs['Emission Strength'].keyframe_insert(data_path="default_value", frame=t_finish_slim_rod)
 
-        # Runout Along Finished Cooling Bed
         set_loc_key(block, t_runout_end,      (mill_stand_positions[2] + 16.0, REAR_CONVEYOR_Y, 4.8))
         set_scale_key(block, t_runout_end,    (7.5, 0.12, 0.12))
 
         set_loc_key(block, scene.frame_end,   (mill_stand_positions[2] + 20.0, REAR_CONVEYOR_Y, 4.8))
         set_scale_key(block, scene.frame_end, (7.5, 0.12, 0.12))
 
-    # Rear Doors Close
     t_rear_close_start = t_on_rear_belt + 4
     t_rear_close_end   = t_rear_close_start + 8
     set_loc_key(rdoor_l, t_rear_close_start, (furnace_x - 1.35, FURNACE_REAR_Y, 6.2))
@@ -1310,7 +1296,7 @@ for pair_idx in range(NUM_PAIRS):
     set_loc_key(rdoor_r, t_rear_close_end,   (furnace_x + 1.35, FURNACE_REAR_Y, 4.8))
 
 # -------------------------------------------------------------
-# 16. Update Laptop Screen Logs
+# 17. Update Laptop Screen Logs (Now completely safe)
 # -------------------------------------------------------------
 if len(generated_lot_records) >= 4:
     text_esc1.data.body = f"BLK-A: {generated_lot_records[0][0]} | {generated_lot_records[0][1]}"
@@ -1319,7 +1305,7 @@ if len(generated_lot_records) >= 4:
     text_f2.data.body   = f"CP-2: CHARGE | CP-3: ROLLING RUN"
 
 # -------------------------------------------------------------
-# 17. Cinematic Fly-Through Render Camera System
+# 18. Cinematic Fly-Through Render Camera System
 # -------------------------------------------------------------
 bpy.ops.object.camera_add(location=(-14.0, 14.0, 5.0))
 cinematic_cam = bpy.context.active_object
@@ -1327,7 +1313,6 @@ cinematic_cam.name = "Cinematic_Production_Camera"
 cinematic_cam.data.lens = 32
 cinematic_cam.data.clip_end = 250.0
 
-# 5 Sequential Film Camera Shots:
 set_loc_key(cinematic_cam, 1,   (-16.0, 14.0, 4.5))
 set_rot_key(cinematic_cam, 1,   (math.radians(75), 0, math.radians(-140)))
 set_loc_key(cinematic_cam, 90,  (-1.0, 12.0, 4.8))
@@ -1354,7 +1339,7 @@ set_loc_key(cinematic_cam, 660, (50.0, 22.0, 7.0))
 set_rot_key(cinematic_cam, 660, (math.radians(72), 0, math.radians(-155)))
 
 # -------------------------------------------------------------
-# 18. Version-Safe Linear Keyframe Interpolation
+# 19. Version-Safe Linear Keyframe Interpolation
 # -------------------------------------------------------------
 def set_linear_interpolation(obj):
     if not obj.animation_data or not obj.animation_data.action:
@@ -1383,7 +1368,7 @@ for obj in bpy.data.objects:
     set_linear_interpolation(obj)
 
 # -------------------------------------------------------------
-# 19. Balanced Factory Illumination
+# 20. Balanced Factory Illumination
 # -------------------------------------------------------------
 bpy.ops.object.light_add(type='SUN', location=(-6.0, -8.0, 26.0))
 sun = bpy.context.active_object
@@ -1404,14 +1389,12 @@ for fx in furnace_positions:
     discharge_glow.data.energy = 1800.0
     discharge_glow.data.color = (1.0, 0.35, 0.05)
 
-# Cooling Tunnel Lighting
 bpy.ops.object.light_add(type='POINT', location=(COOL_TUNNEL_X, COOL_TUNNEL_Y, COOL_TUNNEL_Z + 0.5))
 cool_light = bpy.context.active_object
 cool_light.name = "Spray_Cooling_Lighting"
 cool_light.data.energy = 950.0
 cool_light.data.color = (0.75, 0.90, 1.0)
 
-# Rolling Mill Lighting
 bpy.ops.object.light_add(type='POINT', location=(45.0, REAR_CONVEYOR_Y, 5.5))
 mill_light = bpy.context.active_object
 mill_light.name = "Rolling_Mill_Glow"
@@ -1426,7 +1409,7 @@ for bay_x in [-3.0, 11.5, 27.0, 42.0]:
     bay_light.data.color = (0.95, 0.98, 1.0)
 
 # -------------------------------------------------------------
-# 20. Viewport Configuration & Output Settings
+# 21. Viewport Configuration & Output Settings
 # -------------------------------------------------------------
 for area in bpy.context.screen.areas:
     if area.type == 'VIEW_3D':
