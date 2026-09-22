@@ -42,7 +42,7 @@ if bg_node:
     bg_node.inputs['Strength'].default_value = 2.0
 
 # -------------------------------------------------------------
-# 3. Global Helpers & Industrial Material Suite
+# 3. Global Helpers & Industrial Material Suite (All Definitions First)
 # -------------------------------------------------------------
 def apply_bevel(obj, width=0.03, segments=2):
     mod = obj.modifiers.new(name="Bevel", type='BEVEL')
@@ -120,7 +120,7 @@ def make_tinted_glass_mat(name):
         mat.blend_method = 'BLEND'
     return mat
 
-# Base Architecture & Machinery Materials
+# Base Materials
 mat_epoxy_floor      = make_mat("IndustrialEpoxyFloor", (0.32, 0.35, 0.38, 1.0), metallic=0.08, roughness=0.35)
 mat_mezzanine_floor  = make_mat("Industrial1stFloorMezz", (0.24, 0.26, 0.29, 1.0), metallic=0.45, roughness=0.42)
 mat_safety_walkway   = make_mat("FloorSafetyBorderWalk", (0.85, 0.55, 0.02, 1.0),  metallic=0.02, roughness=0.6)
@@ -141,7 +141,7 @@ mat_pulpit_glass     = make_tinted_glass_mat("PulpitLaminatedGlass")
 mat_stencil_yellow   = make_mat("PulpitStencilYellow",   (0.95, 0.72, 0.08, 1.0),   metallic=0.10, roughness=0.4)
 mat_heat_shield      = make_mat("PulpitReflectiveShield",(0.82, 0.85, 0.88, 1.0),   metallic=0.95, roughness=0.15)
 
-# Big Office Specific Materials
+# Office Materials
 mat_office_wall      = make_mat("ExecutiveOfficeWall",   (0.85, 0.87, 0.90, 1.0),   metallic=0.15, roughness=0.30)
 mat_office_ceiling   = make_mat("AcousticCeilingTiles",  (0.92, 0.93, 0.94, 1.0),   metallic=0.02, roughness=0.75)
 mat_office_carpet    = make_mat("OfficeCommercialCarpet",(0.15, 0.18, 0.22, 1.0),   metallic=0.01, roughness=0.92)
@@ -179,6 +179,47 @@ mat_scada_text_cyan  = make_mat("SCADA_TelemetryCyan",   (0.12, 0.85, 1.0, 1.0),
 mat_scada_text_green = make_mat("SCADA_TelemetryGreen",  (0.15, 1.0, 0.35, 1.0),    emission=(0.15, 1.0, 0.35, 1.0), emission_strength=18.0)
 
 # -------------------------------------------------------------
+# CONVEYOR BUILDER HELPER (Defined here before any calls)
+# -------------------------------------------------------------
+def build_conveyor(name, center_x, center_y, center_z, length=9.0, width=1.35):
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(center_x, center_y, center_z))
+    bed = bpy.context.active_object
+    bed.name = f"{name}_Bed"
+    bed.scale = (length, width, 0.22)
+    bed.data.materials.append(mat_machinery_green)
+    apply_bevel(bed, 0.02)
+
+    half_w = width / 2
+    for y_offset, side in [(-(half_w + 0.045), "L"), ((half_w + 0.045), "R")]:
+        bpy.ops.mesh.primitive_cube_add(size=1, location=(center_x, center_y + y_offset, center_z + 0.18))
+        rail = bpy.context.active_object
+        rail.name = f"{name}_Rail_{side}"
+        rail.scale = (length, 0.07, 0.3)
+        rail.data.materials.append(mat_safety_yellow)
+        apply_bevel(rail, 0.01)
+
+    steps = max(1, int(length // 2.5) + 1)
+    for k in range(steps):
+        px = (center_x - length / 2 + 0.6) + (k * 2.5)
+        if px > center_x + length / 2 - 0.4:
+            continue
+        leg_len = center_z if center_z < 3.0 else 0.45
+        leg_z_pos = (center_z / 2) if center_z < 3.0 else (center_z - 0.22)
+        for y_pos in [-(half_w - 0.02), (half_w - 0.02)]:
+            bpy.ops.mesh.primitive_cylinder_add(radius=0.08, depth=leg_len, location=(px, center_y + y_pos, leg_z_pos))
+            leg = bpy.context.active_object
+            leg.data.materials.append(mat_cast_steel)
+
+    num_rollers = int(length / 0.65)
+    for i in range(num_rollers):
+        rx = center_x - length / 2 + 0.3 + (i * 0.65)
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.055, depth=width - 0.05, location=(rx, center_y, center_z + 0.11))
+        roller = bpy.context.active_object
+        roller.name = f"{name}_Roller_{i+1}"
+        roller.rotation_euler = (math.radians(90), 0, 0)
+        roller.data.materials.append(mat_roller_chrome)
+
+# -------------------------------------------------------------
 # 4. Factory Floors (Ground & Elevated 1st Floor)
 # -------------------------------------------------------------
 furnace_positions = [22.0, 32.0]
@@ -201,7 +242,7 @@ walk_line_ground = bpy.context.active_object
 walk_line_ground.scale = (140.0, 0.15, 0.01)
 walk_line_ground.data.materials.append(mat_safety_walkway)
 
-# 1st Floor Mezzanine Deck (Z = 4.45)
+# 1st Floor Operating Mezzanine Deck (Z = 4.45)
 bpy.ops.mesh.primitive_cube_add(size=1, location=(34.0, 12.0, 4.45))
 first_floor_main = bpy.context.active_object
 first_floor_main.name = "First_Floor_Main_Deck"
@@ -250,14 +291,12 @@ OFFICE_W = 11.0
 OFFICE_L = 16.0
 OFFICE_H = 3.6
 
-# A. Office Carpeted Subfloor
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X, OFFICE_Y, OFFICE_BASE_Z + 0.03))
 office_carpet = bpy.context.active_object
 office_carpet.name = "BigOffice_Carpet_Floor"
 office_carpet.scale = (OFFICE_W - 0.2, OFFICE_L - 0.2, 0.06)
 office_carpet.data.materials.append(mat_office_carpet)
 
-# B. Acoustic Insulated Ceiling Slab
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X, OFFICE_Y, OFFICE_BASE_Z + OFFICE_H))
 office_roof = bpy.context.active_object
 office_roof.name = "BigOffice_Acoustic_Ceiling"
@@ -265,7 +304,6 @@ office_roof.scale = (OFFICE_W + 0.6, OFFICE_L + 0.6, 0.22)
 office_roof.data.materials.append(mat_office_ceiling)
 apply_bevel(office_roof, 0.04)
 
-# C. Outer Perimeter Solid Walls
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X - OFFICE_W/2, OFFICE_Y, OFFICE_BASE_Z + OFFICE_H/2))
 wall_w = bpy.context.active_object
 wall_w.scale = (0.25, OFFICE_L, OFFICE_H)
@@ -281,7 +319,6 @@ wall_s = bpy.context.active_object
 wall_s.scale = (OFFICE_W, 0.25, OFFICE_H)
 wall_s.data.materials.append(mat_office_wall)
 
-# D. East Wall: Panoramic Floor-to-Ceiling Glass Observation Bay Overlooking Plant
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X + OFFICE_W/2, OFFICE_Y, OFFICE_BASE_Z + 0.42))
 knee_wall = bpy.context.active_object
 knee_wall.scale = (0.25, OFFICE_L, 0.85)
@@ -299,7 +336,6 @@ for my in [-6.0, -3.0, 0.0, 3.0, 6.0]:
     mull.scale = (0.16, 0.14, 2.7)
     mull.data.materials.append(mat_cast_steel)
 
-# E. Office Exterior Identification Signage
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X + OFFICE_W/2 + 0.08, OFFICE_Y, OFFICE_BASE_Z + 0.42))
 off_sign_plate = bpy.context.active_object
 off_sign_plate.scale = (0.04, 5.2, 0.50)
@@ -317,7 +353,6 @@ bpy.context.collection.objects.link(text_off)
 text_off.location = (OFFICE_X + OFFICE_W/2 + 0.12, OFFICE_Y, OFFICE_BASE_Z + 0.42)
 text_off.rotation_euler = (math.radians(90), 0, math.radians(-90))
 
-# F. Interior Executive Conference Table & Workstations
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X, OFFICE_Y, OFFICE_BASE_Z + 0.8))
 conf_table = bpy.context.active_object
 conf_table.name = "BigOffice_Conference_Table"
@@ -348,7 +383,6 @@ wboard.name = "BigOffice_Whiteboard"
 wboard.scale = (0.04, 5.0, 1.6)
 wboard.data.materials.append(mat_whiteboard)
 
-# G. Bright Warm Office Ceiling Light
 bpy.ops.object.light_add(type='AREA', location=(OFFICE_X, OFFICE_Y, OFFICE_BASE_Z + OFFICE_H - 0.2))
 off_light = bpy.context.active_object
 off_light.name = "BigOffice_Ceiling_Light"
@@ -356,7 +390,6 @@ off_light.data.energy = 850.0
 off_light.data.size = 5.0
 off_light.data.color = (1.0, 0.97, 0.94)
 
-# Dedicated Human Eye Camera Inside the Big Office
 bpy.ops.object.camera_add(location=(OFFICE_X - 2.5, OFFICE_Y, OFFICE_BASE_Z + 1.65))
 cam_office_eye = bpy.context.active_object
 cam_office_eye.name = "Camera_BigOffice_Human_Eye"
@@ -365,7 +398,7 @@ cam_office_eye.data.clip_end = 300.0
 align_obj_to_target(cam_office_eye, (19.0, 6.0, 5.0))
 
 # -------------------------------------------------------------
-# 6. Conveyor Networks
+# 6. Conveyor Placements (Calls defined build_conveyor safely)
 # -------------------------------------------------------------
 build_conveyor("Conveyor_Ground_Infeed", center_x=-3.0, center_y=7.5, center_z=0.6, length=22.0, width=1.35)
 build_conveyor("Conveyor_1stFloor_Staging", center_x=16.0, center_y=0.0, center_z=4.6, length=41.0, width=1.35)
@@ -970,7 +1003,6 @@ cam_cp3_eye.data.lens = 24
 cam_cp3_eye.data.clip_end = 300.0
 align_obj_to_target(cam_cp3_eye, (27.0, REAR_CONVEYOR_Y, 4.8))
 
-# Default scene camera set to the Big Executive Office view
 scene.camera = cam_office_eye
 
 # -------------------------------------------------------------
