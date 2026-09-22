@@ -123,132 +123,132 @@ mat_conveyor_rubber  = make_mat("ReinforcedBlackRubber", (0.08, 0.08, 0.09, 1.0)
 mat_roller_chrome    = make_mat("HardRollerChrome",      (0.90, 0.92, 0.94, 1.0),   metallic=0.98, roughness=0.05)
 mat_copper_pipe      = make_mat("IndustrialOxidizedCopper",(0.78, 0.32, 0.14, 1.0), metallic=0.94, roughness=0.24)
 mat_wall_corrugated  = make_mat("CorrugatedWallPanels",  (0.42, 0.45, 0.48, 1.0),   metallic=0.72, roughness=0.48)
-mat_pulpit_body      = make_mat("PulpitGreyBlueSteel",   (0.24, 0.32, 0.38, 1.0),   metallic=0.75, roughness=0.45)[cite: 1, 2]
-mat_pulpit_dark      = make_mat("PulpitUnderbodySteel",  (0.14, 0.16, 0.18, 1.0),   metallic=0.88, roughness=0.55)[cite: 1]
+mat_pulpit_body      = make_mat("PulpitGreyBlueSteel",   (0.24, 0.32, 0.38, 1.0),   metallic=0.75, roughness=0.45)
+mat_pulpit_dark      = make_mat("PulpitUnderbodySteel",  (0.14, 0.16, 0.18, 1.0),   metallic=0.88, roughness=0.55)
 mat_pulpit_glass     = make_tinted_glass_mat("PulpitLaminatedGlass")
-mat_stencil_yellow   = make_mat("PulpitStencilYellow",   (0.95, 0.72, 0.08, 1.0),   metallic=0.10, roughness=0.4)[cite: 1]
-mat_heat_shield      = make_mat("PulpitReflectiveShield",(0.82, 0.85, 0.88, 1.0),   metallic=0.95, roughness=0.15)[cite: 1]
+mat_stencil_yellow   = make_mat("PulpitStencilYellow",   (0.95, 0.72, 0.08, 1.0),   metallic=0.10, roughness=0.4)
+mat_heat_shield      = make_mat("PulpitReflectiveShield",(0.82, 0.85, 0.88, 1.0),   metallic=0.95, roughness=0.15)
 mat_office_wall      = make_mat("ExecutiveOfficeWall",   (0.85, 0.87, 0.90, 1.0),   metallic=0.15, roughness=0.30)
 mat_office_ceiling   = make_mat("AcousticCeilingTiles",  (0.92, 0.93, 0.94, 1.0),   metallic=0.02, roughness=0.75)
 mat_office_carpet    = make_mat("OfficeCommercialCarpet",(0.15, 0.18, 0.22, 1.0),   metallic=0.01, roughness=0.92)
 mat_wood_desk        = make_mat("ExecutiveWoodMahogany", (0.28, 0.12, 0.06, 1.0),   metallic=0.05, roughness=0.32)
 mat_whiteboard       = make_mat("DryEraseWhiteboard",    (0.96, 0.97, 0.98, 1.0),   metallic=0.02, roughness=0.08)
-mat_vision_blue      = make_mat("CognexIndustrialBlue",  (0.02, 0.22, 0.65, 1.0),   metallic=0.85, roughness=0.22)[cite: 1]
-mat_cam_barrel       = make_mat("LensAnodizedBlack",     (0.04, 0.04, 0.05, 1.0),   metallic=0.70, roughness=0.35)[cite: 1]
-mat_vision_lens      = make_mat("AntiReflectiveLensGlass",(0.005, 0.015, 0.02, 1.0), metallic=0.98, roughness=0.02)[cite: 1]
-mat_lens_ring_led    = make_mat("VisionLEDStrobeRing",   (0.96, 0.98, 1.0, 1.0),    emission=(0.96, 0.98, 1.0, 1.0), emission_strength=18.0)[cite: 1]
-mat_gantry_silver    = make_mat("BrushedAluminum",       (0.70, 0.72, 0.74, 1.0),   metallic=0.95, roughness=0.18)[cite: 1]
-mat_furnace_oxide    = make_mat("FurnaceHematiteRust",   (0.28, 0.10, 0.06, 1.0),   metallic=0.38, roughness=0.82)[cite: 1]
-mat_furnace_mantle   = make_mat("CharcoalHeatShield",    (0.10, 0.11, 0.12, 1.0),   metallic=0.85, roughness=0.55)[cite: 1]
-mat_molten_iron      = make_mat("MoltenIronBathCore",    (1.0, 0.25, 0.01, 1.0),    emission=(1.0, 0.28, 0.02, 1.0), emission_strength=32.0)[cite: 1]
-mat_engrave_base     = make_mat("MilledSteelCavity",     (0.05, 0.05, 0.06, 1.0),   metallic=0.85, roughness=0.80)[cite: 1]
+mat_vision_blue      = make_mat("CognexIndustrialBlue",  (0.02, 0.22, 0.65, 1.0),   metallic=0.85, roughness=0.22)
+mat_cam_barrel       = make_mat("LensAnodizedBlack",     (0.04, 0.04, 0.05, 1.0),   metallic=0.70, roughness=0.35)
+mat_vision_lens      = make_mat("AntiReflectiveLensGlass",(0.005, 0.015, 0.02, 1.0), metallic=0.98, roughness=0.02)
+mat_lens_ring_led    = make_mat("VisionLEDStrobeRing",   (0.96, 0.98, 1.0, 1.0),    emission=(0.96, 0.98, 1.0, 1.0), emission_strength=18.0)
+mat_gantry_silver    = make_mat("BrushedAluminum",       (0.70, 0.72, 0.74, 1.0),   metallic=0.95, roughness=0.18)
+mat_furnace_oxide    = make_mat("FurnaceHematiteRust",   (0.28, 0.10, 0.06, 1.0),   metallic=0.38, roughness=0.82)
+mat_furnace_mantle   = make_mat("CharcoalHeatShield",    (0.10, 0.11, 0.12, 1.0),   metallic=0.85, roughness=0.55)
+mat_molten_iron      = make_mat("MoltenIronBathCore",    (1.0, 0.25, 0.01, 1.0),    emission=(1.0, 0.28, 0.02, 1.0), emission_strength=32.0)
+mat_engrave_base     = make_mat("MilledSteelCavity",     (0.05, 0.05, 0.06, 1.0),   metallic=0.85, roughness=0.80)
 mat_mill_housing     = make_mat("MillStandDeepBlue",     (0.04, 0.15, 0.28, 1.0),   metallic=0.85, roughness=0.35)
 mat_chock_steel      = make_mat("HeavyMillChockSteel",   (0.18, 0.20, 0.22, 1.0),   metallic=0.92, roughness=0.28)
 mat_spray_hood       = make_mat("StainlessSprayHood",    (0.68, 0.70, 0.72, 1.0),   metallic=0.90, roughness=0.20)
 mat_water_spray      = make_mat("CoolingWaterMist",      (0.80, 0.92, 1.0, 0.35),   metallic=0.05, roughness=0.1)
 if hasattr(mat_water_spray, 'blend_method'):
     mat_water_spray.blend_method = 'BLEND'
-mat_desk_top         = make_mat("WorkstationDeskMat",    (0.15, 0.17, 0.19, 1.0),   metallic=0.40, roughness=0.60)[cite: 1]
-mat_laptop_shell     = make_mat("MagnesiumAlloyShell",   (0.12, 0.13, 0.14, 1.0),   metallic=0.92, roughness=0.26)[cite: 1]
-mat_laptop_body      = make_mat("LaptopChassisMat",      (0.08, 0.085, 0.09, 1.0),  metallic=0.90, roughness=0.25)[cite: 1]
-mat_laptop_kb        = make_mat("LaptopKeyboardMat",     (0.02, 0.02, 0.025, 1.0),  metallic=0.10, roughness=0.80)[cite: 1]
-mat_scada_screen_bg  = make_mat("SCADA_DisplayDarkNavy", (0.005, 0.015, 0.035, 1.0),emission=(0.005, 0.015, 0.035, 1.0), emission_strength=2.2)[cite: 1]
-mat_scada_text_cyan  = make_mat("SCADA_TelemetryCyan",   (0.12, 0.85, 1.0, 1.0),    emission=(0.12, 0.85, 1.0, 1.0), emission_strength=16.0)[cite: 1]
-mat_scada_text_green = make_mat("SCADA_TelemetryGreen",  (0.15, 1.0, 0.35, 1.0),    emission=(0.15, 1.0, 0.35, 1.0), emission_strength=18.0)[cite: 1]
+mat_desk_top         = make_mat("WorkstationDeskMat",    (0.15, 0.17, 0.19, 1.0),   metallic=0.40, roughness=0.60)
+mat_laptop_shell     = make_mat("MagnesiumAlloyShell",   (0.12, 0.13, 0.14, 1.0),   metallic=0.92, roughness=0.26)
+mat_laptop_body      = make_mat("LaptopChassisMat",      (0.08, 0.085, 0.09, 1.0),  metallic=0.90, roughness=0.25)
+mat_laptop_kb        = make_mat("LaptopKeyboardMat",     (0.02, 0.02, 0.025, 1.0),  metallic=0.10, roughness=0.80)
+mat_scada_screen_bg  = make_mat("SCADA_DisplayDarkNavy", (0.005, 0.015, 0.035, 1.0),emission=(0.005, 0.015, 0.035, 1.0), emission_strength=2.2)
+mat_scada_text_cyan  = make_mat("SCADA_TelemetryCyan",   (0.12, 0.85, 1.0, 1.0),    emission=(0.12, 0.85, 1.0, 1.0), emission_strength=16.0)
+mat_scada_text_green = make_mat("SCADA_TelemetryGreen",  (0.15, 1.0, 0.35, 1.0),    emission=(0.15, 1.0, 0.35, 1.0), emission_strength=18.0)
 
 # -------------------------------------------------------------
-# 4. Global Helper Functions (All defined early to avoid NameErrors)
+# 4. Global Helper Functions
 # -------------------------------------------------------------
 def apply_bevel(obj, width=0.03, segments=2):
-    mod = obj.modifiers.new(name="Bevel", type='BEVEL')[cite: 1]
-    mod.width = width[cite: 1]
-    mod.segments = segments[cite: 1]
+    mod = obj.modifiers.new(name="Bevel", type='BEVEL')
+    mod.width = width
+    mod.segments = segments
 
 def align_obj_to_target(obj, target_loc):
-    direction = mathutils.Vector(target_loc) - obj.location[cite: 1]
-    rot_quat = direction.to_track_quat('-Z', 'Y')[cite: 1]
-    obj.rotation_euler = rot_quat.to_euler()[cite: 1]
+    direction = mathutils.Vector(target_loc) - obj.location
+    rot_quat = direction.to_track_quat('-Z', 'Y')
+    obj.rotation_euler = rot_quat.to_euler()
 
 def build_conveyor(name, center_x, center_y, center_z, length=9.0, width=1.35):
-    bpy.ops.mesh.primitive_cube_add(size=1, location=(center_x, center_y, center_z))[cite: 1]
-    bed = bpy.context.active_object[cite: 1]
-    bed.name = f"{name}_Bed"[cite: 1]
-    bed.scale = (length, width, 0.22)[cite: 1]
-    bed.data.materials.append(mat_machinery_green)[cite: 1]
-    apply_bevel(bed, 0.02)[cite: 1]
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(center_x, center_y, center_z))
+    bed = bpy.context.active_object
+    bed.name = f"{name}_Bed"
+    bed.scale = (length, width, 0.22)
+    bed.data.materials.append(mat_machinery_green)
+    apply_bevel(bed, 0.02)
 
-    half_w = width / 2[cite: 1]
-    for y_offset, side in [(-(half_w + 0.045), "L"), ((half_w + 0.045), "R")]:[cite: 1]
-        bpy.ops.mesh.primitive_cube_add(size=1, location=(center_x, center_y + y_offset, center_z + 0.18))[cite: 1]
-        rail = bpy.context.active_object[cite: 1]
-        rail.name = f"{name}_Rail_{side}"[cite: 1]
-        rail.scale = (length, 0.07, 0.3)[cite: 1]
-        rail.data.materials.append(mat_safety_yellow)[cite: 1]
-        apply_bevel(rail, 0.01)[cite: 1]
+    half_w = width / 2
+    for y_offset, side in [(-(half_w + 0.045), "L"), ((half_w + 0.045), "R")]:
+        bpy.ops.mesh.primitive_cube_add(size=1, location=(center_x, center_y + y_offset, center_z + 0.18))
+        rail = bpy.context.active_object
+        rail.name = f"{name}_Rail_{side}"
+        rail.scale = (length, 0.07, 0.3)
+        rail.data.materials.append(mat_safety_yellow)
+        apply_bevel(rail, 0.01)
 
-    steps = max(1, int(length // 2.5) + 1)[cite: 1]
-    for k in range(steps):[cite: 1]
-        px = (center_x - length / 2 + 0.6) + (k * 2.5)[cite: 1]
-        if px > center_x + length / 2 - 0.4:[cite: 1]
-            continue[cite: 1]
+    steps = max(1, int(length // 2.5) + 1)
+    for k in range(steps):
+        px = (center_x - length / 2 + 0.6) + (k * 2.5)
+        if px > center_x + length / 2 - 0.4:
+            continue
         leg_len = center_z if center_z < 3.0 else 0.45
         leg_z_pos = (center_z / 2) if center_z < 3.0 else (center_z - 0.22)
-        for y_pos in [-(half_w - 0.02), (half_w - 0.02)]:[cite: 1]
-            bpy.ops.mesh.primitive_cylinder_add(radius=0.08, depth=leg_len, location=(px, center_y + y_pos, leg_z_pos))[cite: 1]
-            leg = bpy.context.active_object[cite: 1]
-            leg.data.materials.append(mat_cast_steel)[cite: 1]
+        for y_pos in [-(half_w - 0.02), (half_w - 0.02)]:
+            bpy.ops.mesh.primitive_cylinder_add(radius=0.08, depth=leg_len, location=(px, center_y + y_pos, leg_z_pos))
+            leg = bpy.context.active_object
+            leg.data.materials.append(mat_cast_steel)
 
-    num_rollers = int(length / 0.65)[cite: 1]
-    for i in range(num_rollers):[cite: 1]
-        rx = center_x - length / 2 + 0.3 + (i * 0.65)[cite: 1]
-        bpy.ops.mesh.primitive_cylinder_add(radius=0.055, depth=width - 0.05, location=(rx, center_y, center_z + 0.11))[cite: 1]
-        roller = bpy.context.active_object[cite: 1]
-        roller.name = f"{name}_Roller_{i+1}"[cite: 1]
-        roller.rotation_euler = (math.radians(90), 0, 0)[cite: 1]
-        roller.data.materials.append(mat_roller_chrome)[cite: 1]
+    num_rollers = int(length / 0.65)
+    for i in range(num_rollers):
+        rx = center_x - length / 2 + 0.3 + (i * 0.65)
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.055, depth=width - 0.05, location=(rx, center_y, center_z + 0.11))
+        roller = bpy.context.active_object
+        roller.name = f"{name}_Roller_{i+1}"
+        roller.rotation_euler = (math.radians(90), 0, 0)
+        roller.data.materials.append(mat_roller_chrome)
 
 def build_high_detail_camera_rig(name, pos, target_loc, gantry_beam_loc):
-    direction = (mathutils.Vector(target_loc) - mathutils.Vector(pos)).normalized()[cite: 1]
-    rot_quat = direction.to_track_quat('-Z', 'Y')[cite: 1]
-    rot_euler = rot_quat.to_euler()[cite: 1]
+    direction = (mathutils.Vector(target_loc) - mathutils.Vector(pos)).normalized()
+    rot_quat = direction.to_track_quat('-Z', 'Y')
+    rot_euler = rot_quat.to_euler()
 
-    drop_len = abs(gantry_beam_loc[2] - pos[2])[cite: 1]
-    stem_center = (pos[0], pos[1], pos[2] + drop_len / 2)[cite: 1]
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.035, depth=drop_len, location=stem_center)[cite: 1]
-    arm = bpy.context.active_object[cite: 1]
-    arm.data.materials.append(mat_gantry_silver)[cite: 1]
+    drop_len = abs(gantry_beam_loc[2] - pos[2])
+    stem_center = (pos[0], pos[1], pos[2] + drop_len / 2)
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.035, depth=drop_len, location=stem_center)
+    arm = bpy.context.active_object
+    arm.data.materials.append(mat_gantry_silver)
 
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.08, depth=0.10, location=pos)[cite: 1]
-    gimbal = bpy.context.active_object[cite: 1]
-    gimbal.rotation_euler = rot_euler[cite: 1]
-    gimbal.data.materials.append(mat_cast_steel)[cite: 1]
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.08, depth=0.10, location=pos)
+    gimbal = bpy.context.active_object
+    gimbal.rotation_euler = rot_euler
+    gimbal.data.materials.append(mat_cast_steel)
 
-    bpy.ops.mesh.primitive_cube_add(size=1, location=pos)[cite: 1]
-    cam_box = bpy.context.active_object[cite: 1]
-    cam_box.scale = (0.24, 0.32, 0.22)[cite: 1]
-    cam_box.rotation_euler = rot_euler[cite: 1]
-    cam_box.data.materials.append(mat_vision_blue)[cite: 1]
-    apply_bevel(cam_box, 0.015)[cite: 1]
+    bpy.ops.mesh.primitive_cube_add(size=1, location=pos)
+    cam_box = bpy.context.active_object
+    cam_box.scale = (0.24, 0.32, 0.22)
+    cam_box.rotation_euler = rot_euler
+    cam_box.data.materials.append(mat_vision_blue)
+    apply_bevel(cam_box, 0.015)
 
-    lens_loc = mathutils.Vector(pos) + (direction * 0.20)[cite: 1]
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.08, depth=0.18, location=lens_loc)[cite: 1]
-    lens_barrel = bpy.context.active_object[cite: 1]
-    lens_barrel.rotation_euler = rot_euler[cite: 1]
-    lens_barrel.data.materials.append(mat_cam_barrel)[cite: 1]
+    lens_loc = mathutils.Vector(pos) + (direction * 0.20)
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.08, depth=0.18, location=lens_loc)
+    lens_barrel = bpy.context.active_object
+    lens_barrel.rotation_euler = rot_euler
+    lens_barrel.data.materials.append(mat_cam_barrel)
 
-    aperture_loc = mathutils.Vector(pos) + (direction * 0.29)[cite: 1]
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.065, depth=0.02, location=aperture_loc)[cite: 1]
-    front_element = bpy.context.active_object[cite: 1]
-    front_element.rotation_euler = rot_euler[cite: 1]
-    front_element.data.materials.append(mat_vision_lens)[cite: 1]
+    aperture_loc = mathutils.Vector(pos) + (direction * 0.29)
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.065, depth=0.02, location=aperture_loc)
+    front_element = bpy.context.active_object
+    front_element.rotation_euler = rot_euler
+    front_element.data.materials.append(mat_vision_lens)
 
-    ring_loc = mathutils.Vector(pos) + (direction * 0.30)[cite: 1]
-    bpy.ops.mesh.primitive_torus_add(major_radius=0.11, minor_radius=0.02, location=ring_loc)[cite: 1]
-    ring_light = bpy.context.active_object[cite: 1]
-    ring_light.rotation_euler = rot_euler[cite: 1]
-    ring_light.data.materials.append(mat_lens_ring_led)[cite: 1]
+    ring_loc = mathutils.Vector(pos) + (direction * 0.30)
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.11, minor_radius=0.02, location=ring_loc)
+    ring_light = bpy.context.active_object
+    ring_light.rotation_euler = rot_euler
+    ring_light.data.materials.append(mat_lens_ring_led)
 
-    back_loc = mathutils.Vector(pos) - (direction * 0.16)[cite: 1]
+    back_loc = mathutils.Vector(pos) - (direction * 0.16)
     bpy.ops.mesh.primitive_cylinder_add(radius=0.02, depth=0.12, location=back_loc)
     antenna = bpy.context.active_object
     antenna.rotation_euler = rot_euler
@@ -455,8 +455,6 @@ walk_line_ground.scale = (140.0, 0.15, 0.01)
 walk_line_ground.data.materials.append(mat_safety_walkway)
 
 # 1st Floor Operating Deck (Mezzanine at Z = 4.45)
-# East Operating Floor (From elevator crest at X=4.5 to East Edge at X=52.0, Y from -12.0 to 26.0)
-# (NO extra floor on the west side beyond the elevators)
 bpy.ops.mesh.primitive_cube_add(size=1, location=(28.0, 7.0, 4.45))
 first_floor_main = bpy.context.active_object
 first_floor_main.name = "First_Floor_Main_Deck"
@@ -478,7 +476,6 @@ walk_line_1st = bpy.context.active_object
 walk_line_1st.scale = (48.0, 0.18, 0.01)
 walk_line_1st.data.materials.append(mat_safety_walkway)
 
-# Factory Back Corrugated Wall
 bpy.ops.mesh.primitive_cube_add(size=1, location=(18.0, 32.0, 9.0))
 wall_back = bpy.context.active_object
 wall_back.scale = (168.0, 0.6, 18.0)
@@ -487,15 +484,12 @@ wall_back.data.materials.append(mat_wall_corrugated)
 # -------------------------------------------------------------
 # 6. BIG OFFICE AT THE RIGHT/EAST EDGE OF 1ST FLOOR
 # -------------------------------------------------------------
-# Positioned at the East edge of the 1st floor (X = 46.5, Y = -3.2, Z = 4.60)
-# Its panoramic glass faces WEST (-X), looking straight across the sides of the hydraulic pushers,
-# Furnace 2, Furnace 1, and the 1st Cabin (CP-2 at X=27, Y=-9).
 OFFICE_X = 46.5
 OFFICE_Y = -3.2
 OFFICE_BASE_Z = 4.60
-OFFICE_W = 8.5     # Width along X (from edge)
-OFFICE_L = 14.0    # Length along Y
-OFFICE_H = 3.6     # Ceiling height
+OFFICE_W = 8.5
+OFFICE_L = 14.0
+OFFICE_H = 3.6
 
 # A. Office Carpet Floor
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X, OFFICE_Y, OFFICE_BASE_Z + 0.03))
@@ -512,47 +506,40 @@ office_roof.scale = (OFFICE_W + 0.6, OFFICE_L + 0.6, 0.22)
 office_roof.data.materials.append(mat_office_ceiling)
 apply_bevel(office_roof, 0.04)
 
-# C. Outer Perimeter Walls (East, North, and South Solid Walls)
-# East Wall (At 1st floor outer edge)
+# C. Outer Perimeter Walls
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X + OFFICE_W/2, OFFICE_Y, OFFICE_BASE_Z + OFFICE_H/2))
 wall_e = bpy.context.active_object
 wall_e.scale = (0.25, OFFICE_L, OFFICE_H)
 wall_e.data.materials.append(mat_office_wall)
 
-# North Wall
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X, OFFICE_Y + OFFICE_L/2, OFFICE_BASE_Z + OFFICE_H/2))
 wall_n = bpy.context.active_object
 wall_n.scale = (OFFICE_W, 0.25, OFFICE_H)
 wall_n.data.materials.append(mat_office_wall)
 
-# South Wall
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X, OFFICE_Y - OFFICE_L/2, OFFICE_BASE_Z + OFFICE_H/2))
 wall_s = bpy.context.active_object
 wall_s.scale = (OFFICE_W, 0.25, OFFICE_H)
 wall_s.data.materials.append(mat_office_wall)
 
-# D. West Wall: Full Panoramic Glass Wall Facing Pushers, Furnaces & 1st Cabin
-# Lower Knee Wall (0.85m height)
+# D. West Wall: Panoramic Glass Wall
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X - OFFICE_W/2, OFFICE_Y, OFFICE_BASE_Z + 0.42))
 knee_wall = bpy.context.active_object
 knee_wall.scale = (0.25, OFFICE_L, 0.85)
 knee_wall.data.materials.append(mat_office_wall)
 
-# Panoramic Glass Pane Facing West (-X) towards pushers and 1st cabin
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X - OFFICE_W/2, OFFICE_Y, OFFICE_BASE_Z + 2.2))
 plant_glass = bpy.context.active_object
 plant_glass.name = "BigOffice_Panoramic_Glass_West"
 plant_glass.scale = (0.08, OFFICE_L - 0.4, 2.7)
 plant_glass.data.materials.append(mat_pulpit_glass)
 
-# Black Anodized Framing Mullions
 for my in [-5.0, -2.5, 0.0, 2.5, 5.0]:
     bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X - OFFICE_W/2, OFFICE_Y + my, OFFICE_BASE_Z + 2.2))
     mull = bpy.context.active_object
     mull.scale = (0.16, 0.14, 2.7)
     mull.data.materials.append(mat_cast_steel)
 
-# Exterior Sign Plate on Knee Wall facing the pushers
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X - OFFICE_W/2 - 0.08, OFFICE_Y, OFFICE_BASE_Z + 0.42))
 off_sign_plate = bpy.context.active_object
 off_sign_plate.scale = (0.04, 5.8, 0.50)
@@ -570,7 +557,7 @@ bpy.context.collection.objects.link(text_off)
 text_off.location = (OFFICE_X - OFFICE_W/2 - 0.12, OFFICE_Y, OFFICE_BASE_Z + 0.42)
 text_off.rotation_euler = (math.radians(90), 0, math.radians(-90))
 
-# Interior Executive Conference Table & Chairs (Oriented along Y)
+# Interior Furniture
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X + 0.5, OFFICE_Y, OFFICE_BASE_Z + 0.8))
 conf_table = bpy.context.active_object
 conf_table.name = "BigOffice_Conference_Table"
@@ -595,14 +582,12 @@ for cy in [-2.0, -1.0, 0.0, 1.0, 2.0]:
         back.scale = (0.08, 0.45, 0.70)
         back.data.materials.append(mat_conveyor_rubber)
 
-# Whiteboard on East Wall
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X + OFFICE_W/2 - 0.15, OFFICE_Y, OFFICE_BASE_Z + 1.8))
 wboard = bpy.context.active_object
 wboard.name = "BigOffice_Whiteboard"
 wboard.scale = (0.04, 5.0, 1.6)
 wboard.data.materials.append(mat_whiteboard)
 
-# Ceiling Light
 bpy.ops.object.light_add(type='AREA', location=(OFFICE_X, OFFICE_Y, OFFICE_BASE_Z + OFFICE_H - 0.2))
 off_light = bpy.context.active_object
 off_light.name = "BigOffice_Ceiling_Light"
@@ -611,7 +596,6 @@ off_light.data.size = 5.0
 off_light.data.color = (1.0, 0.97, 0.94)
 
 # Dedicated Human Eye Camera Inside the Big Office
-# Positioned at eye level looking West (-X) straight across the pusher sides, Furnace 2, Furnace 1, and 1st Cabin
 bpy.ops.object.camera_add(location=(OFFICE_X + 2.0, OFFICE_Y, OFFICE_BASE_Z + 1.65))
 cam_office_eye = bpy.context.active_object
 cam_office_eye.name = "Camera_BigOffice_Human_Eye"
@@ -987,7 +971,6 @@ for esc_num, ex_pos in [(1, -3.0), (2, 3.0)]:[cite: 1]
         ocr_light.data.spot_blend = 0.2[cite: 1]
         ocr_light.data.color = (0.95, 0.98, 1.0)[cite: 1]
 
-# Exactly 1 Camera per furnace (Total: 2 cameras for 2 furnaces)
 for f_idx, fx in enumerate(furnace_positions):
     furnace_num = f_idx + 1
 
@@ -1024,7 +1007,6 @@ for f_idx, fx in enumerate(furnace_positions):
 # -------------------------------------------------------------
 PULPIT_BASE_Z = 5.2
 
-# CABIN 1: CP-1 ELEVATOR MONITOR[cite: 1, 2]
 create_control_pulpit(
     "Pulpit_Elevator",
     "CP-1 ELEVATOR CONTROL",
@@ -1035,13 +1017,10 @@ create_control_pulpit(
     is_side_oriented=True
 )
 
-# CABIN 2: CP-2 FRONT INFEED PULPIT (1st Cabin Between Furnaces)[cite: 1, 2]
 create_control_pulpit("Pulpit_Front", "CP-2 INFEED CONTROL", center_x=27.0, center_y=-9.0, base_z=PULPIT_BASE_Z, facing="POS_Y")
-
-# CABIN 3: CP-3 REAR DISCHARGE PULPIT[cite: 1, 2]
 create_control_pulpit("Pulpit_Rear", "CP-3 DISCHARGE CONTROL", center_x=27.0, center_y=29.5, base_z=PULPIT_BASE_Z, facing="NEG_Y")
 
-# Human Eye Camera 1: Inside CP-1
+# Human Eye Cameras Inside Pulpits
 bpy.ops.object.camera_add(location=(11.0, 6.8, PULPIT_BASE_Z + 1.65))
 cam_cp1_eye = bpy.context.active_object
 cam_cp1_eye.name = "Camera_Pulpit_CP1_Elevator_Eye"
@@ -1049,7 +1028,6 @@ cam_cp1_eye.data.lens = 24
 cam_cp1_eye.data.clip_end = 300.0
 align_obj_to_target(cam_cp1_eye, (0.0, 3.5, 4.16))
 
-# Human Eye Camera 2: Inside CP-2
 bpy.ops.object.camera_add(location=(27.0, -9.25, PULPIT_BASE_Z + 1.65))
 cam_cp2_eye = bpy.context.active_object
 cam_cp2_eye.name = "Camera_Pulpit_Front_Human_Eye"
@@ -1057,7 +1035,6 @@ cam_cp2_eye.data.lens = 24
 cam_cp2_eye.data.clip_end = 300.0
 align_obj_to_target(cam_cp2_eye, (27.0, FURNACE_FRONT_Y + 2.0, 4.8))
 
-# Human Eye Camera 3: Inside CP-3
 bpy.ops.object.camera_add(location=(27.0, 28.75, PULPIT_BASE_Z + 1.65))
 cam_cp3_eye = bpy.context.active_object
 cam_cp3_eye.name = "Camera_Pulpit_Rear_Human_Eye"
@@ -1065,7 +1042,6 @@ cam_cp3_eye.data.lens = 24
 cam_cp3_eye.data.clip_end = 300.0
 align_obj_to_target(cam_cp3_eye, (27.0, REAR_CONVEYOR_Y, 4.8))
 
-# Active camera set to Big Office overlooking the pusher sides and 1st cabin
 scene.camera = cam_office_eye
 
 # -------------------------------------------------------------
@@ -1079,7 +1055,6 @@ def add_stamped_id_to_end_faces(parent_block, block_num):
     lot_trail = f"ID#{random.randint(100, 999)}"[cite: 1]
     generated_lot_records.append((lot_lead, lot_trail))[cite: 1]
 
-    # Lead End Face (+X)[cite: 1]
     bpy.ops.mesh.primitive_cube_add(size=1)[cite: 1]
     pocket_lead = bpy.context.active_object[cite: 1]
     pocket_lead.name = f"Pocket_Lead_{block_num}"[cite: 1]
@@ -1103,7 +1078,6 @@ def add_stamped_id_to_end_faces(parent_block, block_num):
     text_lead.rotation_euler = (math.radians(90), 0, math.radians(90))[cite: 1]
     text_lead.scale = (1.0 / 0.58, 1.0 / 0.36, 1.0 / 2.3)[cite: 1]
 
-    # Trail End Face (-X)[cite: 1]
     bpy.ops.mesh.primitive_cube_add(size=1)[cite: 1]
     pocket_trail = bpy.context.active_object[cite: 1]
     pocket_trail.name = f"Pocket_Trail_{block_num}"[cite: 1]
@@ -1273,7 +1247,7 @@ for pair_idx in range(NUM_PAIRS):[cite: 1]
 
         bsdf.inputs['Emission Strength'].default_value = 0.0[cite: 1]
         bsdf.inputs['Emission Strength'].keyframe_insert(data_path="default_value", frame=t_inside)[cite: 1]
-        bsdf.inputs['Emission Color'].default_value = (1.0, 0.28, 0.02, 1.0)
+        bsdf.inputs['Emission Color'].default_value = (1.0, 0.28, 0.02, 1.0)[cite: 1]
         bsdf.inputs['Emission Color'].keyframe_insert(data_path="default_value", frame=t_inside)[cite: 1]
         set_scale_key(block, t_inside, (2.3, 0.58, 0.36))[cite: 1]
 
