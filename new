@@ -124,7 +124,7 @@ mat_roller_chrome    = make_mat("HardRollerChrome",      (0.90, 0.92, 0.94, 1.0)
 mat_copper_pipe      = make_mat("IndustrialOxidizedCopper",(0.78, 0.32, 0.14, 1.0), metallic=0.94, roughness=0.24)
 mat_wall_corrugated  = make_mat("CorrugatedWallPanels",  (0.42, 0.45, 0.48, 1.0),   metallic=0.72, roughness=0.48)
 
-# Reference-Accurate Pulpit Materials[cite: 1, 2]
+# Pulpit Materials[cite: 1, 2]
 mat_pulpit_body      = make_mat("PulpitGreyBlueSteel",   (0.24, 0.32, 0.38, 1.0),   metallic=0.75, roughness=0.45)
 mat_pulpit_dark      = make_mat("PulpitUnderbodySteel",  (0.14, 0.16, 0.18, 1.0),   metallic=0.88, roughness=0.55)
 mat_pulpit_glass     = make_tinted_glass_mat("PulpitLaminatedGlass")
@@ -136,8 +136,6 @@ mat_vision_blue      = make_mat("CognexIndustrialBlue",  (0.02, 0.22, 0.65, 1.0)
 mat_cam_barrel       = make_mat("LensAnodizedBlack",     (0.04, 0.04, 0.05, 1.0),   metallic=0.70, roughness=0.35)
 mat_vision_lens      = make_mat("AntiReflectiveLensGlass",(0.005, 0.015, 0.02, 1.0), metallic=0.98, roughness=0.02)
 mat_lens_ring_led    = make_mat("VisionLEDStrobeRing",   (0.96, 0.98, 1.0, 1.0),    emission=(0.96, 0.98, 1.0, 1.0), emission_strength=18.0)
-mat_cat6a_cable      = make_mat("Cat6aShieldedCable",    (0.05, 0.28, 0.85, 1.0),   metallic=0.08, roughness=0.55)
-mat_patch_yellow     = make_mat("YellowPatchCord",       (0.95, 0.75, 0.03, 1.0),   metallic=0.02, roughness=0.5)
 mat_gantry_silver    = make_mat("BrushedAluminum",       (0.70, 0.72, 0.74, 1.0),   metallic=0.95, roughness=0.18)
 
 # Metallurgy & Furnace Materials
@@ -154,10 +152,7 @@ mat_water_spray      = make_mat("CoolingWaterMist",      (0.80, 0.92, 1.0, 0.35)
 if hasattr(mat_water_spray, 'blend_method'):
     mat_water_spray.blend_method = 'BLEND'
 
-# SCADA Server & Operator Workstation Materials
-mat_server_chassis   = make_mat("ServerMatteCharcoal",   (0.06, 0.065, 0.07, 1.0),  metallic=0.88, roughness=0.28)
-mat_server_screen    = make_mat("ServerTerminalOLED",    (0.01, 0.45, 0.85, 1.0),   emission=(0.01, 0.45, 0.85, 1.0), emission_strength=14.0)
-mat_server_led_grn   = make_mat("ServerActiveStatusGreen",(0.05, 1.0, 0.15, 1.0),   emission=(0.05, 1.0, 0.15, 1.0), emission_strength=22.0)
+# Operator Workstation Materials
 mat_desk_top         = make_mat("WorkstationDeskMat",    (0.15, 0.17, 0.19, 1.0),   metallic=0.40, roughness=0.60)
 mat_laptop_shell     = make_mat("MagnesiumAlloyShell",   (0.12, 0.13, 0.14, 1.0),   metallic=0.92, roughness=0.26)
 mat_laptop_body      = make_mat("LaptopChassisMat",      (0.08, 0.085, 0.09, 1.0),  metallic=0.90, roughness=0.25)
@@ -165,6 +160,7 @@ mat_laptop_kb        = make_mat("LaptopKeyboardMat",     (0.02, 0.02, 0.025, 1.0
 mat_scada_screen_bg  = make_mat("SCADA_DisplayDarkNavy", (0.005, 0.015, 0.035, 1.0),emission=(0.005, 0.015, 0.035, 1.0), emission_strength=2.2)
 mat_scada_text_cyan  = make_mat("SCADA_TelemetryCyan",   (0.12, 0.85, 1.0, 1.0),    emission=(0.12, 0.85, 1.0, 1.0), emission_strength=16.0)
 mat_scada_text_green = make_mat("SCADA_TelemetryGreen",  (0.15, 1.0, 0.35, 1.0),    emission=(0.15, 1.0, 0.35, 1.0), emission_strength=18.0)
+mat_console_screen   = make_mat("PulpitMonitorOLED",     (0.01, 0.45, 0.85, 1.0),   emission=(0.01, 0.45, 0.85, 1.0), emission_strength=14.0)
 
 def apply_bevel(obj, width=0.03, segments=2):
     mod = obj.modifiers.new(name="Bevel", type='BEVEL')
@@ -172,9 +168,8 @@ def apply_bevel(obj, width=0.03, segments=2):
     mod.segments = segments
 
 # -------------------------------------------------------------
-# 4. Extended Layout Geometry & Floors (Ground & 1st Floor)
+# 4. Factory Floors (Ground & Elevated 1st Floor)
 # -------------------------------------------------------------
-# Spacing shift: Furnaces shifted +X to 22.0 and 32.0 (providing a safe 10.5m thermal buffer from Elevator/Pulpit)
 furnace_positions = [22.0, 32.0]
 escalator_x_positions = [-3.0, 3.0]
 
@@ -189,8 +184,8 @@ walk_line_ground = bpy.context.active_object
 walk_line_ground.scale = (140.0, 0.15, 0.01)
 walk_line_ground.data.materials.append(mat_safety_walkway)
 
-# 1st Floor Elevated Operating Deck (Mezzanine at Z = 4.45)
-# Section 1: Main East Mezzanine Deck covering Pulpits, Furnaces, Rolling Mill
+# 1st Floor Operating Mezzanine Deck (Z = 4.45)
+# East Deck
 bpy.ops.mesh.primitive_cube_add(size=1, location=(34.0, 4.0, 4.45))
 first_floor_main = bpy.context.active_object
 first_floor_main.name = "First_Floor_Main_Deck"
@@ -198,7 +193,7 @@ first_floor_main.scale = (56.0, 38.0, 0.28)
 first_floor_main.data.materials.append(mat_mezzanine_floor)
 apply_bevel(first_floor_main, 0.03)
 
-# Section 2: West Wing Mezzanine Deck (West of Elevators)
+# West Deck
 bpy.ops.mesh.primitive_cube_add(size=1, location=(-13.0, 4.0, 4.45))
 first_floor_west = bpy.context.active_object
 first_floor_west.name = "First_Floor_West_Deck"
@@ -206,14 +201,14 @@ first_floor_west.scale = (14.0, 38.0, 0.28)
 first_floor_west.data.materials.append(mat_mezzanine_floor)
 apply_bevel(first_floor_west, 0.03)
 
-# Section 3: Central Catwalk Between the two Infeed Elevators
+# Mid Walkway Between Elevator Cutouts
 bpy.ops.mesh.primitive_cube_add(size=1, location=(0.0, 4.0, 4.45))
 first_floor_mid = bpy.context.active_object
 first_floor_mid.name = "First_Floor_Mid_Walkway"
 first_floor_mid.scale = (2.4, 38.0, 0.28)
 first_floor_mid.data.materials.append(mat_mezzanine_floor)
 
-# Structural Columns Supporting 1st Floor Mezzanine
+# Support Columns Supporting 1st Floor Mezzanine
 for px in [-15.0, 6.0, 11.5, 27.0, 42.0, 56.0]:
     for py in [-10.0, 2.0, 14.0]:
         bpy.ops.mesh.primitive_cube_add(size=1, location=(px, py, 2.22))
@@ -278,7 +273,7 @@ def build_conveyor(name, center_x, center_y, center_z, length=9.0, width=1.35):
 # Ground Floor Infeed Conveyor (Blooms originate here on Ground Floor)
 build_conveyor("Conveyor_Ground_Infeed", center_x=-3.0, center_y=7.5, center_z=0.6, length=22.0, width=1.35)
 
-# 1st Floor Staging Conveyor in front of Furnaces (Extended to X=38.0)
+# 1st Floor Staging Conveyor in front of Furnaces (Runs completely unblocked along Y=0.0)
 build_conveyor("Conveyor_1stFloor_Staging", center_x=19.0, center_y=0.0, center_z=4.6, length=44.0, width=1.35)
 
 # 1st Floor Rear Outfeed & Hot Rolling Conveyor Line
@@ -314,7 +309,7 @@ for idx, ex in enumerate(escalator_x_positions):
         apply_bevel(step, 0.01)
 
 # -------------------------------------------------------------
-# 7. Continuous Through-Type Furnaces (Shifted to X = 22.0 & 32.0)
+# 7. Continuous Through-Type Furnaces
 # -------------------------------------------------------------
 front_doors_pair_list = []
 rear_doors_pair_list = []
@@ -459,7 +454,7 @@ for idx, fx in enumerate(furnace_positions):
     piston_rods_group.append(rods_for_this_station)
 
 # -------------------------------------------------------------
-# 8. High-Pressure Cooling Spray Tunnel (Shifted along Rear Line)
+# 8. High-Pressure Cooling Spray Tunnel
 # -------------------------------------------------------------
 COOL_TUNNEL_X = 37.5
 COOL_TUNNEL_Y = 8.5
@@ -538,39 +533,10 @@ for s_idx, mx in enumerate(mill_stand_positions):
     spindle.data.materials.append(mat_cast_steel)
 
 # -------------------------------------------------------------
-# 10. SCADA Server Station
+# 10. Operator Workstation Desk
 # -------------------------------------------------------------
-SERVER_X = 11.5
-SERVER_Y = -6.8
-SERVER_Z = 5.2
-
-bpy.ops.mesh.primitive_cube_add(size=1, location=(SERVER_X, SERVER_Y, SERVER_Z))
-server_cabinet = bpy.context.active_object
-server_cabinet.name = "OCR_System_Server_Rack"
-server_cabinet.scale = (2.2, 1.4, 2.8)
-server_cabinet.data.materials.append(mat_server_chassis)
-apply_bevel(server_cabinet, 0.03)
-
-bpy.ops.mesh.primitive_cube_add(size=1, location=(SERVER_X, SERVER_Y + 0.71, SERVER_Z + 0.5))
-terminal_screen = bpy.context.active_object
-terminal_screen.scale = (1.2, 0.02, 0.6)
-terminal_screen.data.materials.append(mat_server_screen)
-
-for b_idx in range(5):
-    sz_off = -0.7 + (b_idx * 0.25)
-    bpy.ops.mesh.primitive_cube_add(size=1, location=(SERVER_X, SERVER_Y + 0.705, SERVER_Z + sz_off))
-    blade = bpy.context.active_object
-    blade.scale = (1.8, 0.02, 0.16)
-    blade.data.materials.append(mat_cast_steel)
-
-    for led_x in [-0.7, -0.5, -0.3, 0.3, 0.5, 0.7]:
-        bpy.ops.mesh.primitive_cylinder_add(radius=0.015, depth=0.04, location=(SERVER_X + led_x, SERVER_Y + 0.72, SERVER_Z + sz_off))
-        led = bpy.context.active_object
-        led.rotation_euler = (math.radians(90), 0, 0)
-        led.data.materials.append(mat_server_led_grn)
-
 DESK_X = 9.7
-DESK_Y = -6.8
+DESK_Y = -12.0
 DESK_Z = 4.45
 
 bpy.ops.mesh.primitive_cube_add(size=1, location=(DESK_X, DESK_Y, DESK_Z))
@@ -596,6 +562,7 @@ lap_base.data.materials.append(mat_laptop_shell)
 
 bpy.ops.mesh.primitive_cube_add(size=1, location=(LAP_X, LAP_Y - 0.03, LAP_Z + 0.01))
 lap_kb = bpy.context.active_object
+lap_kb.name = "Laptop_Keyboard_Tray"
 lap_kb.scale = (0.46, 0.22, 0.005)
 lap_kb.data.materials.append(mat_laptop_body)
 
@@ -636,39 +603,8 @@ text_f1   = make_screen_text("Screen_Log_Furnace1", "CP-1: ELEVATOR INFEED MONIT
 text_f2   = make_screen_text("Screen_Log_Furnace2", "CP-2: CHARGE | CP-3: ROLLING RUN", 0.01, -0.34, 0.021, mat_scada_text_cyan)
 
 # -------------------------------------------------------------
-# 11. Cognex Vision Rig Helper
+# 11. Self-Contained Wireless Cognex Vision Rig Helper
 # -------------------------------------------------------------
-def build_network_wire(name, start_pt, end_pt, mat, sag=0.25):
-    curve_data = bpy.data.curves.new(name=f"{name}_Data", type='CURVE')
-    curve_data.dimensions = '3D'
-    curve_data.fill_mode = 'FULL'
-    curve_data.bevel_depth = 0.022
-    curve_data.bevel_resolution = 3
-
-    polyline = curve_data.splines.new('BEZIER')
-    polyline.bezier_points.add(2)
-    p0, p1, p2 = polyline.bezier_points[0], polyline.bezier_points[1], polyline.bezier_points[2]
-
-    p0.co = start_pt
-    p0.handle_left_type = 'AUTO'
-    p0.handle_right_type = 'AUTO'
-
-    mid_pt = ((start_pt[0] + end_pt[0]) / 2, (start_pt[1] + end_pt[1]) / 2, max(start_pt[2], end_pt[2]) + 0.15 - sag)
-    p1.co = mid_pt
-    p1.handle_left_type = 'AUTO'
-    p1.handle_right_type = 'AUTO'
-
-    p2.co = end_pt
-    p2.handle_left_type = 'AUTO'
-    p2.handle_right_type = 'AUTO'
-
-    wire_obj = bpy.data.objects.new(name, curve_data)
-    wire_obj.data.materials.append(mat)
-    bpy.context.collection.objects.link(wire_obj)
-    return wire_obj
-
-build_network_wire("Wire_Server_To_Laptop_RJ45", (SERVER_X - 1.0, SERVER_Y + 0.4, SERVER_Z - 0.3), (LAP_X + 0.27, LAP_Y, LAP_Z + 0.01), mat_patch_yellow, 0.10)
-
 def align_obj_to_target(obj, target_loc):
     direction = mathutils.Vector(target_loc) - obj.location
     rot_quat = direction.to_track_quat('-Z', 'Y')
@@ -715,13 +651,12 @@ def build_high_detail_camera_rig(name, pos, target_loc, gantry_beam_loc):
     ring_light.rotation_euler = rot_euler
     ring_light.data.materials.append(mat_lens_ring_led)
 
+    # Compact Wireless Antenna Base (clean, no hanging wires)
     back_loc = mathutils.Vector(pos) - (direction * 0.16)
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.035, depth=0.08, location=back_loc)
-    gland = bpy.context.active_object
-    gland.rotation_euler = rot_euler
-    gland.data.materials.append(mat_cast_steel)
-
-    build_network_wire(f"Wire_{name}_ToServer", back_loc, (SERVER_X, SERVER_Y, SERVER_Z + 1.8), mat_cat6a_cable)
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.02, depth=0.12, location=back_loc)
+    antenna = bpy.context.active_object
+    antenna.rotation_euler = rot_euler
+    antenna.data.materials.append(mat_cast_steel)
 
 # Escalator Vision Stations
 for esc_num, ex_pos in [(1, -3.0), (2, 3.0)]:
@@ -815,12 +750,10 @@ for f_idx, fx in enumerate(furnace_positions):
         f_ocr_light.data.color = (0.95, 0.98, 1.0)
 
 # -------------------------------------------------------------
-# 12. Complete 4-Way Modular Pulpit Cabin Builder (CP-1, CP-2, CP-3)[cite: 1, 2]
+# 12. Modular Pulpit Cabin Generator (CP-1, CP-2, CP-3)[cite: 1, 2]
 # -------------------------------------------------------------
 def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, facing="POS_Y", is_side_oriented=False):
-    # Dimensions
     if is_side_oriented:
-        # Cabin elongated in Y, observation window facing along X
         cabin_len_x = 4.0
         cabin_len_y = 5.4
     else:
@@ -828,7 +761,7 @@ def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, fa
         cabin_len_y = 4.0
     cabin_h = 3.2
 
-    # A. Support Columns from 1st Floor Slab
+    # A. Support Columns
     for col_x in [center_x - cabin_len_x/2 + 0.35, center_x + cabin_len_x/2 - 0.35]:
         for col_y in [center_y - cabin_len_y/2 + 0.35, center_y + cabin_len_y/2 - 0.35]:
             bpy.ops.mesh.primitive_cube_add(size=1, location=(col_x, col_y, (base_z + 4.45) / 2))
@@ -863,7 +796,7 @@ def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, fa
     glass_center_z = base_z + 2.1
 
     if facing == "NEG_X":
-        # Facing toward -X (towards the elevators)
+        # Facing towards elevators (-X)
         win_x = center_x - (cabin_len_x/2 - 0.25)
         bpy.ops.mesh.primitive_cube_add(size=1, location=(win_x - 0.15, center_y, glass_center_z))
         glass = bpy.context.active_object
@@ -887,24 +820,21 @@ def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, fa
             side_g.scale = (cabin_len_x - 1.2, 0.06, 1.55)
             side_g.data.materials.append(mat_pulpit_glass)
 
-        # Rear Solid Wall facing the Furnaces with Reflective Heat Shield Blanket
+        # Rear Solid Wall with Heat Shield
         bpy.ops.mesh.primitive_cube_add(size=1, location=(center_x + cabin_len_x/2 - 0.1, center_y, glass_center_z))
         rear_wall = bpy.context.active_object
         rear_wall.scale = (0.2, cabin_len_y, 1.6)
         rear_wall.data.materials.append(mat_pulpit_body)
 
-        # Thermal Radiation Heat Deflector Shield Facing Furnaces
         bpy.ops.mesh.primitive_cube_add(size=1, location=(center_x + cabin_len_x/2 + 0.12, center_y, glass_center_z))
         heat_shield = bpy.context.active_object
         heat_shield.name = f"{name_prefix}_Furnace_Heat_Shield"
         heat_shield.scale = (0.06, cabin_len_y + 0.4, 2.2)
         heat_shield.data.materials.append(mat_heat_shield)
 
-        # Sign Plate on Window Face
         sign_pos = (win_x - 0.05, center_y, base_z + 0.85)
         sign_rot = (math.radians(90), 0, math.radians(-90))
 
-        # Catwalk in Front
         catwalk_loc = (win_x - 0.55, center_y, base_z + 0.15)
         catwalk_scale = (0.9, cabin_len_y + 0.8, 0.12)
         rail_axis = 'Y'
@@ -974,7 +904,7 @@ def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, fa
     roof.data.materials.append(mat_pulpit_stripes)
     apply_bevel(roof, 0.08)
 
-    # Catwalk Platform & Yellow Tubular Handrails[cite: 2, 3]
+    # Catwalk Platform & Yellow Handrails[cite: 2, 3]
     bpy.ops.mesh.primitive_cube_add(size=1, location=catwalk_loc)
     cwalk = bpy.context.active_object
     cwalk.scale = catwalk_scale
@@ -995,12 +925,14 @@ def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, fa
             top_rail.data.materials.append(mat_safety_yellow)
 
     # Interior Console Desk, Monitors, and Operator Seat
-    bpy.ops.mesh.primitive_cube_add(size=1, location=(center_x, center_y, base_z + 1.1))
+    desk_loc = (center_x - 0.8, center_y, base_z + 1.1) if facing == "NEG_X" else (center_x, center_y + (0.8 if facing == "POS_Y" else -0.8), base_z + 1.1)
+    bpy.ops.mesh.primitive_cube_add(size=1, location=desk_loc)
     c_desk = bpy.context.active_object
-    c_desk.scale = (cabin_len_x - 1.2, 0.8, 0.12) if rail_axis == 'X' else (0.8, cabin_len_y - 1.2, 0.12)
+    c_desk.scale = (0.8, cabin_len_y - 1.2, 0.12) if facing == "NEG_X" else (cabin_len_x - 1.2, 0.8, 0.12)
     c_desk.data.materials.append(mat_desk_top)
 
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.35, depth=0.1, location=(center_x, center_y, base_z + 0.75))
+    chair_loc = (center_x + 0.2, center_y, base_z + 0.75) if facing == "NEG_X" else (center_x, center_y - (0.2 if facing == "POS_Y" else -0.2), base_z + 0.75)
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.35, depth=0.1, location=chair_loc)
     c_seat = bpy.context.active_object
     c_seat.data.materials.append(mat_conveyor_rubber)
 
@@ -1015,26 +947,34 @@ def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, fa
 # -------------------------------------------------------------
 PULPIT_BASE_Z = 5.2
 
-# CABIN 1: NEW PULPIT BETWEEN ELEVATOR & FURNACE (CP-1 ELEVATOR MONITOR)
-# Placed safely at X = 11.5 (8.5m away from Elevator crest at X=3.0, and 10.5m away from Furnace 1 at X=22.0)
-# Faces -X (pointing straight at the infeed elevators) with heavy heat shield towards furnace
-create_control_pulpit("Pulpit_Elevator", "CP-1 ELEVATOR CONTROL", center_x=11.5, center_y=0.0, base_z=PULPIT_BASE_Z, facing="NEG_X", is_side_oriented=True)
+# CABIN 1: CP-1 ELEVATOR MONITOR
+# Repositioned safely to the side at Y = -6.8, X = 11.5 (completely off the conveyor line at Y = 0.0)
+# Faces -X (pointing straight at the infeed elevators) with 10.5m thermal buffer from Furnace 1 (X=22.0)
+create_control_pulpit(
+    "Pulpit_Elevator",
+    "CP-1 ELEVATOR CONTROL",
+    center_x=11.5,
+    center_y=-6.8,
+    base_z=PULPIT_BASE_Z,
+    facing="NEG_X",
+    is_side_oriented=True
+)
 
-# CABIN 2: FRONT INFEED PULPIT BETWEEN THE FURNACES (CP-2)
+# CABIN 2: CP-2 FRONT INFEED PULPIT BETWEEN THE FURNACES
 # Centered at X = 27.0 (between Furnace 1 at X=22 and Furnace 2 at X=32), facing +Y towards charging doors
 create_control_pulpit("Pulpit_Front", "CP-2 INFEED CONTROL", center_x=27.0, center_y=-9.0, base_z=PULPIT_BASE_Z, facing="POS_Y")
 
-# CABIN 3: REAR DISCHARGE PULPIT ON THE OPPOSITE SIDE (CP-3)
+# CABIN 3: CP-3 REAR DISCHARGE PULPIT ON THE OPPOSITE SIDE
 # Centered at X = 27.0, Y = 16.2, facing -Y towards discharge doors, cooling spray, and rolling mills
 create_control_pulpit("Pulpit_Rear", "CP-3 DISCHARGE CONTROL", center_x=27.0, center_y=16.2, base_z=PULPIT_BASE_Z, facing="NEG_Y")
 
 # Human Eye Camera 1: Inside CP-1 (Looking directly down the elevator infeed slope towards -X)
-bpy.ops.object.camera_add(location=(11.0, 0.0, PULPIT_BASE_Z + 1.65))
+bpy.ops.object.camera_add(location=(11.0, -6.8, PULPIT_BASE_Z + 1.65))
 cam_cp1_eye = bpy.context.active_object
 cam_cp1_eye.name = "Camera_Pulpit_CP1_Elevator_Eye"
 cam_cp1_eye.data.lens = 24
 cam_cp1_eye.data.clip_end = 300.0
-align_obj_to_target(cam_cp1_eye, (0.0, 2.5, 3.5))
+align_obj_to_target(cam_cp1_eye, (0.0, 1.2, 4.16))
 
 # Human Eye Camera 2: Inside CP-2 (Looking +Y toward Furnace 1 & Furnace 2 charge doors)
 bpy.ops.object.camera_add(location=(27.0, -9.25, PULPIT_BASE_Z + 1.65))
@@ -1052,7 +992,7 @@ cam_cp3_eye.data.lens = 24
 cam_cp3_eye.data.clip_end = 300.0
 align_obj_to_target(cam_cp3_eye, (27.0, 8.5, 4.8))
 
-# Default active scene camera set to the new Elevator-Facing Cabin (CP-1):
+# Default active scene camera set to side elevator-facing cabin (CP-1):
 scene.camera = cam_cp1_eye
 
 # -------------------------------------------------------------
@@ -1168,7 +1108,7 @@ for pair_idx in range(NUM_PAIRS):
         b_mat = make_mat(f"RawCastIron_Mat_{block_id}", (0.16, 0.17, 0.18, 1.0), metallic=0.92, roughness=0.38)
         pair_materials.append(b_mat)
 
-        # 1. Blooms spawn on Ground Floor Infeed Conveyor (Z = 0.8)
+        # Blooms spawn on Ground Floor Infeed Conveyor (Z = 0.8)
         spawn_x = -12.0 - (slot * 2.8)
         bpy.ops.mesh.primitive_cube_add(size=1, location=(spawn_x, 7.5, 0.8))
         block = bpy.context.active_object
@@ -1188,24 +1128,24 @@ for pair_idx in range(NUM_PAIRS):
         set_loc_key(block, t_reach_esc, (esc_x, 7.5, 0.8))
         set_rot_key(block, t_reach_esc, (0, 0, 0))
 
-        # 2. Ascend Elevator to 1st Floor Level
+        # Ascend Elevator to 1st Floor Level
         t_reach_slope_stop = t_reach_esc + RIDE_TO_SLOPE_STOP
         set_rot_key(block, t_reach_esc + 3, (-ESC_ANGLE, 0, 0))
         set_rot_key(block, t_reach_slope_stop, (-ESC_ANGLE, 0, 0))
         set_loc_key(block, t_reach_slope_stop, (esc_x, 1.2, 4.16))
 
-        # 3. OCR Inspection Pause on Slope
+        # OCR Inspection Pause on Slope
         t_resume_slope = t_reach_slope_stop + STOP_DURATION
         set_loc_key(block, t_resume_slope, (esc_x, 1.2, 4.16))
         set_rot_key(block, t_resume_slope, (-ESC_ANGLE, 0, 0))
 
-        # 4. Crest onto 1st Floor Operating Floor
+        # Crest onto 1st Floor Operating Floor
         t_crest_esc = t_resume_slope + CREST_TIME
         set_rot_key(block, t_crest_esc - 2, (-ESC_ANGLE, 0, 0))
         set_rot_key(block, t_crest_esc, (0, 0, 0))
         set_loc_key(block, t_crest_esc, (esc_x, 0.0, 4.8))
 
-        # 5. Travel past CP-1 Pulpit along the 1st Floor Staging Line to Target Furnace
+        # Travel unhindered past CP-1 Pulpit along the 1st Floor Staging Line to Target Furnace
         target_staging_x = furnace_x + pair_x_offset
         dist_to_furnace = abs(target_staging_x - esc_x)
         t_reach_furnace = t_crest_esc + int(dist_to_furnace * 2.1)
@@ -1223,7 +1163,7 @@ for pair_idx in range(NUM_PAIRS):
     keyframe_pusher_assembly(p, rods_for_station, t_pair_staged - 10, PARKED_RAM_Y)
     keyframe_pusher_assembly(p, rods_for_station, t_pair_staged, STAGING_RAM_Y)
 
-    # 6. Front Blast Doors Open
+    # Front Blast Doors Open
     t_door_open_start = t_pair_staged
     t_door_open_end   = t_door_open_start + 8
     set_loc_key(fdoor_l, t_door_open_start, (furnace_x - 1.35, 1.3, 4.8))
@@ -1231,7 +1171,7 @@ for pair_idx in range(NUM_PAIRS):
     set_loc_key(fdoor_r, t_door_open_start, (furnace_x + 1.35, 1.3, 4.8))
     set_loc_key(fdoor_r, t_door_open_end,   (furnace_x + 1.35, 1.3, 6.2))
 
-    # 7. Pusher Ram Infeed Stroke
+    # Pusher Ram Infeed Stroke
     t_approach_start = t_door_open_end + 1
     t_contact        = t_approach_start + 3
     keyframe_pusher_assembly(p, rods_for_station, t_approach_start, STAGING_RAM_Y)
@@ -1258,7 +1198,7 @@ for pair_idx in range(NUM_PAIRS):
     set_loc_key(fdoor_r, t_front_close_start, (furnace_x + 1.35, 1.3, 6.2))
     set_loc_key(fdoor_r, t_front_close_end,   (furnace_x + 1.35, 1.3, 4.8))
 
-    # 8. Reheating Transformation Inside the Furnace Tunnel
+    # Reheating Transformation Inside Furnace Tunnel
     t_heat_done = t_inside + HEAT_TIME
     for slot, block in enumerate(pair_blocks):
         b_mat = pair_materials[slot]
@@ -1275,7 +1215,7 @@ for pair_idx in range(NUM_PAIRS):
         bsdf.inputs['Base Color'].default_value = (1.0, 0.35, 0.04, 1.0)
         bsdf.inputs['Base Color'].keyframe_insert(data_path="default_value", frame=t_heat_done)
 
-    # 9. Rear Discharge Doors Open & Ingot Exit to Rear Conveyor
+    # Rear Discharge Doors Open & Ingot Exit to Rear Conveyor
     t_rear_open_start = t_heat_done + 2
     t_rear_open_end   = t_rear_open_start + 8
     set_loc_key(rdoor_l, t_rear_open_start, (furnace_x - 1.35, 7.7, 4.8))
@@ -1286,7 +1226,7 @@ for pair_idx in range(NUM_PAIRS):
     t_discharge_start = t_rear_open_end + 2
     t_on_rear_belt    = t_discharge_start + 16
 
-    # 10. Cooling Spray Tunnel Pass & Hot Rolling into Slim Rods
+    # Cooling Spray Tunnel Pass & Hot Rolling into Slim Rods
     t_enter_cooling   = t_on_rear_belt + 14
     t_exit_cooling    = t_enter_cooling + 10
     t_enter_rough_mill= t_exit_cooling + 8
@@ -1360,17 +1300,17 @@ cinematic_cam.name = "Cinematic_Production_Camera"
 cinematic_cam.data.lens = 32
 cinematic_cam.data.clip_end = 250.0
 
-# 5 Film Camera Shots across the entire facility:
+# 5 Sequential Film Camera Shots:
 # Shot 1 (Frames 1 - 90): Ground Floor Infeed Conveyor tracking and Elevator entry
 set_loc_key(cinematic_cam, 1,   (-16.0, 14.0, 4.5))
 set_rot_key(cinematic_cam, 1,   (math.radians(75), 0, math.radians(-140)))
 set_loc_key(cinematic_cam, 90,  (-1.0, 12.0, 4.8))
 set_rot_key(cinematic_cam, 90,  (math.radians(72), 0, math.radians(-130)))
 
-# Shot 2 (Frames 91 - 180): Elevator Ascent viewed through the new CP-1 Elevator Pulpit
-set_loc_key(cinematic_cam, 91,  (11.0, 0.0, PULPIT_BASE_Z + 1.65))
+# Shot 2 (Frames 91 - 180): Elevator Ascent viewed through the side CP-1 Elevator Pulpit
+set_loc_key(cinematic_cam, 91,  (11.0, -6.8, PULPIT_BASE_Z + 1.65))
 set_rot_key(cinematic_cam, 91,  (math.radians(80), 0, math.radians(-90)))
-set_loc_key(cinematic_cam, 180, (9.0, -2.0, PULPIT_BASE_Z + 1.8))
+set_loc_key(cinematic_cam, 180, (9.0, -4.8, PULPIT_BASE_Z + 1.8))
 set_rot_key(cinematic_cam, 180, (math.radians(75), 0, math.radians(-75)))
 
 # Shot 3 (Frames 181 - 290): Staging along 1st Floor Mezzanine towards Furnace 1 & 2
