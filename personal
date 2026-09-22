@@ -442,7 +442,6 @@ FURNACE_FRONT_Y = 2.2
 FURNACE_REAR_Y  = 20.8
 REAR_CONVEYOR_Y = 21.8
 
-# Ground Floor
 bpy.ops.mesh.primitive_plane_add(size=200.0, location=(18.0, 0.0, 0.0))
 ground_slab = bpy.context.active_object
 ground_slab.name = "Ground_Factory_Floor"
@@ -453,15 +452,14 @@ walk_line_ground = bpy.context.active_object
 walk_line_ground.scale = (140.0, 0.15, 0.01)
 walk_line_ground.data.materials.append(mat_safety_walkway)
 
-# 1st Floor Operating Mezzanine Deck (Z = 4.45)
-bpy.ops.mesh.primitive_cube_add(size=1, location=(28.5, 9.0, 4.45))
+# Cutoff 1st Floor cleanly before the stairs so airspace is perfectly open
+bpy.ops.mesh.primitive_cube_add(size=1, location=(27.875, 9.0, 4.45))
 first_floor_main = bpy.context.active_object
 first_floor_main.name = "First_Floor_Main_Deck"
-first_floor_main.scale = (47.0, 42.0, 0.28)
+first_floor_main.scale = (45.75, 42.0, 0.28)
 first_floor_main.data.materials.append(mat_mezzanine_floor)
 apply_bevel(first_floor_main, 0.03)
 
-# Dedicated floor extension directly securing CP-1's footprint
 bpy.ops.mesh.primitive_cube_add(size=1, location=(11.5, 6.8, 4.45))
 cp1_floor_support = bpy.context.active_object
 cp1_floor_support.name = "CP1_Dedicated_Mezzanine_Floor"
@@ -469,7 +467,6 @@ cp1_floor_support.scale = (8.0, 8.0, 0.28)
 cp1_floor_support.data.materials.append(mat_mezzanine_floor)
 apply_bevel(cp1_floor_support, 0.03)
 
-# Structural Pillars Supporting 1st Floor Mezzanine
 for px in [6.0, 11.5, 27.0, 42.0, 50.0]:
     for py in [-10.0, 0.0, 6.8, 14.0, 24.0]:
         bpy.ops.mesh.primitive_cube_add(size=1, location=(px, py, 2.22))
@@ -483,14 +480,13 @@ walk_line_1st = bpy.context.active_object
 walk_line_1st.scale = (48.0, 0.18, 0.01)
 walk_line_1st.data.materials.append(mat_safety_walkway)
 
-# Factory Back Corrugated Wall
 bpy.ops.mesh.primitive_cube_add(size=1, location=(18.0, 32.0, 9.0))
 wall_back = bpy.context.active_object
 wall_back.scale = (168.0, 0.6, 18.0)
 wall_back.data.materials.append(mat_wall_corrugated)
 
 # -------------------------------------------------------------
-# 6. BIG OFFICE WITH L-SHAPED STAIRCASE
+# 6. BIG OFFICE & NEW EXTERIOR STAIRCASE WITH HANDRAILS
 # -------------------------------------------------------------
 OFFICE_X = 46.5
 OFFICE_Y = -3.2
@@ -499,7 +495,6 @@ OFFICE_W = 8.5
 OFFICE_L = 14.0
 OFFICE_H = 3.6
 
-# A. Office Floor & Ceiling
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X, OFFICE_Y, OFFICE_BASE_Z + 0.03))
 office_carpet = bpy.context.active_object
 office_carpet.name = "BigOffice_Carpet_Floor"
@@ -513,7 +508,6 @@ office_roof.scale = (OFFICE_W + 0.6, OFFICE_L + 0.6, 0.22)
 office_roof.data.materials.append(mat_office_ceiling)
 apply_bevel(office_roof, 0.04)
 
-# B. Outer Walls
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X + OFFICE_W/2, OFFICE_Y, OFFICE_BASE_Z + OFFICE_H/2))
 wall_e = bpy.context.active_object
 wall_e.scale = (0.25, OFFICE_L, OFFICE_H)
@@ -534,7 +528,6 @@ wall_s = bpy.context.active_object
 wall_s.scale = (OFFICE_W, 0.25, OFFICE_H)
 wall_s.data.materials.append(mat_office_wall)
 
-# Panoramic Glass Front (West)
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X - OFFICE_W/2, OFFICE_Y, OFFICE_BASE_Z + 0.42))
 knee_wall = bpy.context.active_object
 knee_wall.scale = (0.25, OFFICE_L, 0.85)
@@ -552,7 +545,6 @@ for my in [-5.0, -2.5, 0.0, 2.5, 5.0]:
     mull.scale = (0.16, 0.14, 2.7)
     mull.data.materials.append(mat_cast_steel)
 
-# Sign Plate
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X - OFFICE_W/2 - 0.08, OFFICE_Y, OFFICE_BASE_Z + 0.42))
 off_sign_plate = bpy.context.active_object
 off_sign_plate.scale = (0.04, 5.8, 0.50)
@@ -570,7 +562,6 @@ bpy.context.collection.objects.link(text_off)
 text_off.location = (OFFICE_X - OFFICE_W/2 - 0.12, OFFICE_Y, OFFICE_BASE_Z + 0.42)
 text_off.rotation_euler = (math.radians(90), 0, math.radians(-90))
 
-# Conference Furniture
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X + 0.5, OFFICE_Y, OFFICE_BASE_Z + 0.8))
 conf_table = bpy.context.active_object
 conf_table.name = "BigOffice_Conference_Table"
@@ -617,22 +608,45 @@ CORNER_Y = OFFICE_Y + OFFICE_L/2 + 1.5
 OFFICE_SIDE_LANDING_X = OFFICE_X - 1.5
 OFFICE_SIDE_LANDING_Y = CORNER_Y
 
-# Flight 1: Starts behind office at ground floor, ascends in +Y direction
 NUM_FLIGHT1_STEPS = 10
 f1_run_y = 7.5
 f1_start_y = CORNER_Y - f1_run_y
+f1_rise = MID_LANDING_Z - 0.20
+f1_angle = math.atan2(f1_rise, f1_run_y)
+f1_length = math.sqrt(f1_run_y**2 + f1_rise**2)
+f1_mid_y = f1_start_y + f1_run_y / 2
+f1_mid_z = 0.20 + f1_rise / 2
 
 for i in range(NUM_FLIGHT1_STEPS):
     frac = i / (NUM_FLIGHT1_STEPS - 1)
     sy = f1_start_y + (frac * f1_run_y)
-    sz = 0.20 + (frac * (MID_LANDING_Z - 0.20))
+    sz = 0.20 + (frac * f1_rise)
     bpy.ops.mesh.primitive_cube_add(size=1, location=(BACK_X, sy, sz))
     st = bpy.context.active_object
     st.name = f"Office_Stair_Flight1_{i+1}"
     st.scale = (1.5, f1_run_y / NUM_FLIGHT1_STEPS + 0.05, 0.08)
     st.data.materials.append(mat_cast_steel)
 
-# Mid Corner Turn Landing
+for x_off in [-0.7, 0.7]:
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.03, depth=f1_length, location=(BACK_X + x_off, f1_mid_y, f1_mid_z + 0.95))
+    rail = bpy.context.active_object
+    rail.rotation_euler = (f1_angle, 0, 0)
+    rail.data.materials.append(mat_safety_yellow)
+
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(BACK_X + x_off, f1_mid_y, f1_mid_z - 0.1))
+    strg = bpy.context.active_object
+    strg.scale = (0.05, f1_length, 0.2)
+    strg.rotation_euler = (f1_angle, 0, 0)
+    strg.data.materials.append(mat_cast_steel)
+
+    for i in range(NUM_FLIGHT1_STEPS):
+        frac = i / (NUM_FLIGHT1_STEPS - 1)
+        sy = f1_start_y + (frac * f1_run_y)
+        sz = 0.20 + (frac * f1_rise)
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.02, depth=0.95, location=(BACK_X + x_off, sy, sz + 0.475))
+        bal = bpy.context.active_object
+        bal.data.materials.append(mat_safety_yellow)
+
 bpy.ops.mesh.primitive_cube_add(size=1, location=(BACK_X - 0.3, CORNER_Y, MID_LANDING_Z))
 mid_corner = bpy.context.active_object
 mid_corner.name = "Office_Stair_Corner_Landing"
@@ -643,22 +657,45 @@ bpy.ops.mesh.primitive_cylinder_add(radius=0.08, depth=MID_LANDING_Z, location=(
 p_corner = bpy.context.active_object
 p_corner.data.materials.append(mat_cast_steel)
 
-# Flight 2: Turns left (-X direction) towards office side entrance
 NUM_FLIGHT2_STEPS = 9
 f2_run_x = (BACK_X - 1.2) - (OFFICE_SIDE_LANDING_X + 1.2)
 f2_start_x = BACK_X - 1.2
+f2_rise = (OFFICE_BASE_Z - 0.08) - (MID_LANDING_Z + 0.22)
+f2_angle = math.atan2(f2_rise, f2_run_x)
+f2_length = math.sqrt(f2_run_x**2 + f2_rise**2)
+f2_mid_x = f2_start_x - f2_run_x / 2
+f2_mid_z = (MID_LANDING_Z + 0.22) + f2_rise / 2
 
 for j in range(NUM_FLIGHT2_STEPS):
     frac2 = j / (NUM_FLIGHT2_STEPS - 1)
     sx = f2_start_x - (frac2 * f2_run_x)
-    sz = MID_LANDING_Z + 0.22 + (frac2 * (OFFICE_BASE_Z - (MID_LANDING_Z + 0.22)))
+    sz = MID_LANDING_Z + 0.22 + (frac2 * f2_rise)
     bpy.ops.mesh.primitive_cube_add(size=1, location=(sx, CORNER_Y, sz))
     st2 = bpy.context.active_object
     st2.name = f"Office_Stair_Flight2_{j+1}"
     st2.scale = (f2_run_x / NUM_FLIGHT2_STEPS + 0.05, 1.6, 0.08)
     st2.data.materials.append(mat_cast_steel)
 
-# Final 1st Floor Side Landing
+for y_off in [-0.7, 0.7]:
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.03, depth=f2_length, location=(f2_mid_x, CORNER_Y + y_off, f2_mid_z + 0.95))
+    rail = bpy.context.active_object
+    rail.rotation_euler = (0, -f2_angle, 0)
+    rail.data.materials.append(mat_safety_yellow)
+
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(f2_mid_x, CORNER_Y + y_off, f2_mid_z - 0.1))
+    strg = bpy.context.active_object
+    strg.scale = (f2_length, 0.05, 0.2)
+    strg.rotation_euler = (0, -f2_angle, 0)
+    strg.data.materials.append(mat_cast_steel)
+
+    for j in range(NUM_FLIGHT2_STEPS):
+        frac2 = j / (NUM_FLIGHT2_STEPS - 1)
+        sx = f2_start_x - (frac2 * f2_run_x)
+        sz = MID_LANDING_Z + 0.22 + (frac2 * f2_rise)
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.02, depth=0.95, location=(sx, CORNER_Y + y_off, sz + 0.475))
+        bal = bpy.context.active_object
+        bal.data.materials.append(mat_safety_yellow)
+
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_SIDE_LANDING_X, CORNER_Y, OFFICE_BASE_Z - 0.08))
 top_side_landing = bpy.context.active_object
 top_side_landing.name = "Office_Final_Side_Landing"
