@@ -204,6 +204,7 @@ first_floor_mid.name = "First_Floor_Mid_Walkway"
 first_floor_mid.scale = (2.4, 38.0, 0.28)
 first_floor_mid.data.materials.append(mat_mezzanine_floor)
 
+# Support Columns Supporting 1st Floor Mezzanine
 for px in [-15.0, 6.0, 11.5, 27.0, 42.0, 56.0]:
     for py in [-10.0, 2.0, 14.0]:
         bpy.ops.mesh.primitive_cube_add(size=1, location=(px, py, 2.22))
@@ -217,6 +218,7 @@ walk_line_1st = bpy.context.active_object
 walk_line_1st.scale = (52.0, 0.18, 0.01)
 walk_line_1st.data.materials.append(mat_safety_walkway)
 
+# Factory Back Corrugated Wall
 bpy.ops.mesh.primitive_cube_add(size=1, location=(18.0, 24.0, 9.0))
 wall_back = bpy.context.active_object
 wall_back.scale = (156.0, 0.6, 18.0)
@@ -263,12 +265,13 @@ def build_conveyor(name, center_x, center_y, center_z, length=9.0, width=1.35):
         roller.rotation_euler = (math.radians(90), 0, 0)
         roller.data.materials.append(mat_roller_chrome)
 
-# Ground Floor Infeed Conveyor
+# Ground Floor Infeed Conveyor (Blooms originate here on Ground Floor)
 build_conveyor("Conveyor_Ground_Infeed", center_x=-3.0, center_y=7.5, center_z=0.6, length=22.0, width=1.35)
 
-# 1st Floor Infeed & Staging Conveyor
-# Extended in length (52.0m) and moved to center_x=16.0 so it reaches from the elevator crest (X=-6.0) all the way to Furnace 2 (X=37.0)
-build_conveyor("Conveyor_1stFloor_Staging", center_x=16.0, center_y=0.0, center_z=4.6, length=52.0, width=1.35)
+# 1st Floor Staging Conveyor
+# Starts precisely at Elevator 1 crest (X = -4.5) and terminates cleanly right after the 2nd Furnace camera (X = 36.5)
+# Eliminates extra overlapping conveyor belt at elevator and unnecessary extra length after 2nd furnace camera
+build_conveyor("Conveyor_1stFloor_Staging", center_x=16.0, center_y=0.0, center_z=4.6, length=41.0, width=1.35)
 
 # 1st Floor Rear Outfeed & Hot Rolling Conveyor Line
 build_conveyor("Conveyor_Rear_Rolling_Outfeed", center_x=34.0, center_y=8.5, center_z=4.6, length=48.0, width=1.45)
@@ -923,8 +926,8 @@ def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, fa
 PULPIT_BASE_Z = 5.2
 
 # CABIN 1: CP-1 ELEVATOR MONITOR
-# Positioned safely on the +Y side at Y = +6.8, X = 11.5 (completely off the conveyor belt at Y=0.0)
-# Faces -X (pointing straight down at the infeed elevators) with 10.5m thermal buffer from Furnace 1 (X=22.0)
+# Placed on the +Y side of the conveyor line at Y = +6.8, X = 11.5
+# Faces -X towards the elevators with 10.5m thermal buffer from Furnace 1 (X=22.0)
 create_control_pulpit(
     "Pulpit_Elevator",
     "CP-1 ELEVATOR CONTROL",
