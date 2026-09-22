@@ -42,8 +42,18 @@ if bg_node:
     bg_node.inputs['Strength'].default_value = 2.0
 
 # -------------------------------------------------------------
-# 3. Complete Industrial Material Suite
+# 3. Global Helpers & Industrial Material Suite
 # -------------------------------------------------------------
+def apply_bevel(obj, width=0.03, segments=2):
+    mod = obj.modifiers.new(name="Bevel", type='BEVEL')
+    mod.width = width
+    mod.segments = segments
+
+def align_obj_to_target(obj, target_loc):
+    direction = mathutils.Vector(target_loc) - obj.location
+    rot_quat = direction.to_track_quat('-Z', 'Y')
+    obj.rotation_euler = rot_quat.to_euler()
+
 def make_mat(name, color, metallic=0.0, roughness=0.5, emission=None, emission_strength=1.0):
     mat = bpy.data.materials.new(name=name)
     mat.use_nodes = True
@@ -168,11 +178,6 @@ mat_scada_screen_bg  = make_mat("SCADA_DisplayDarkNavy", (0.005, 0.015, 0.035, 1
 mat_scada_text_cyan  = make_mat("SCADA_TelemetryCyan",   (0.12, 0.85, 1.0, 1.0),    emission=(0.12, 0.85, 1.0, 1.0), emission_strength=16.0)
 mat_scada_text_green = make_mat("SCADA_TelemetryGreen",  (0.15, 1.0, 0.35, 1.0),    emission=(0.15, 1.0, 0.35, 1.0), emission_strength=18.0)
 
-def apply_bevel(obj, width=0.03, segments=2):
-    mod = obj.modifiers.new(name="Bevel", type='BEVEL')
-    mod.width = width
-    mod.segments = segments
-
 # -------------------------------------------------------------
 # 4. Factory Floors (Ground & Elevated 1st Floor)
 # -------------------------------------------------------------
@@ -196,8 +201,7 @@ walk_line_ground = bpy.context.active_object
 walk_line_ground.scale = (140.0, 0.15, 0.01)
 walk_line_ground.data.materials.append(mat_safety_walkway)
 
-# 1st Floor Operating Mezzanine Deck (Z = 4.45)
-# East Deck (Furnaces, Infeed, Rolling Mill)
+# 1st Floor Mezzanine Deck (Z = 4.45)
 bpy.ops.mesh.primitive_cube_add(size=1, location=(34.0, 12.0, 4.45))
 first_floor_main = bpy.context.active_object
 first_floor_main.name = "First_Floor_Main_Deck"
@@ -205,7 +209,6 @@ first_floor_main.scale = (56.0, 62.0, 0.28)
 first_floor_main.data.materials.append(mat_mezzanine_floor)
 apply_bevel(first_floor_main, 0.03)
 
-# West Deck - Extended along West edge (X = -20.0 to -6.0) to hold the Big Executive Office
 bpy.ops.mesh.primitive_cube_add(size=1, location=(-15.0, 12.0, 4.45))
 first_floor_west = bpy.context.active_object
 first_floor_west.name = "First_Floor_West_Deck"
@@ -213,14 +216,12 @@ first_floor_west.scale = (20.0, 62.0, 0.28)
 first_floor_west.data.materials.append(mat_mezzanine_floor)
 apply_bevel(first_floor_west, 0.03)
 
-# Mid Walkway Between Elevator Cutouts
 bpy.ops.mesh.primitive_cube_add(size=1, location=(0.0, 12.0, 4.45))
 first_floor_mid = bpy.context.active_object
 first_floor_mid.name = "First_Floor_Mid_Walkway"
 first_floor_mid.scale = (2.4, 62.0, 0.28)
 first_floor_mid.data.materials.append(mat_mezzanine_floor)
 
-# Structural Pillars Supporting 1st Floor Mezzanine
 for px in [-22.0, -12.0, 6.0, 11.5, 27.0, 42.0, 56.0]:
     for py in [-10.0, 2.0, 14.0, 26.0]:
         bpy.ops.mesh.primitive_cube_add(size=1, location=(px, py, 2.22))
@@ -242,13 +243,12 @@ wall_back.data.materials.append(mat_wall_corrugated)
 # -------------------------------------------------------------
 # 5. Large Plant Manager & Operations Office (Edge of 1st Floor)
 # -------------------------------------------------------------
-# Positioned at the West Edge of the 1st Floor Mezzanine (X = -16.0, Y = 6.0)
 OFFICE_X = -16.0
 OFFICE_Y = 6.0
 OFFICE_BASE_Z = 4.60
-OFFICE_W = 11.0    # Width along X
-OFFICE_L = 16.0    # Length along Y
-OFFICE_H = 3.6     # Height of office ceiling
+OFFICE_W = 11.0
+OFFICE_L = 16.0
+OFFICE_H = 3.6
 
 # A. Office Carpeted Subfloor
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X, OFFICE_Y, OFFICE_BASE_Z + 0.03))
@@ -265,47 +265,41 @@ office_roof.scale = (OFFICE_W + 0.6, OFFICE_L + 0.6, 0.22)
 office_roof.data.materials.append(mat_office_ceiling)
 apply_bevel(office_roof, 0.04)
 
-# C. Outer Perimeter Solid Walls (West Wall, South Wall, North Wall)
-# West Exterior Wall
+# C. Outer Perimeter Solid Walls
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X - OFFICE_W/2, OFFICE_Y, OFFICE_BASE_Z + OFFICE_H/2))
 wall_w = bpy.context.active_object
 wall_w.scale = (0.25, OFFICE_L, OFFICE_H)
 wall_w.data.materials.append(mat_office_wall)
 
-# North Wall
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X, OFFICE_Y + OFFICE_L/2, OFFICE_BASE_Z + OFFICE_H/2))
 wall_n = bpy.context.active_object
 wall_n.scale = (OFFICE_W, 0.25, OFFICE_H)
 wall_n.data.materials.append(mat_office_wall)
 
-# South Wall with Entrance Doorway Cutout Structure
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X, OFFICE_Y - OFFICE_L/2, OFFICE_BASE_Z + OFFICE_H/2))
 wall_s = bpy.context.active_object
 wall_s.scale = (OFFICE_W, 0.25, OFFICE_H)
 wall_s.data.materials.append(mat_office_wall)
 
 # D. East Wall: Panoramic Floor-to-Ceiling Glass Observation Bay Overlooking Plant
-# Lower knee wall (0.85m solid)
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X + OFFICE_W/2, OFFICE_Y, OFFICE_BASE_Z + 0.42))
 knee_wall = bpy.context.active_object
 knee_wall.scale = (0.25, OFFICE_L, 0.85)
 knee_wall.data.materials.append(mat_office_wall)
 
-# Upper glass panes
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X + OFFICE_W/2, OFFICE_Y, OFFICE_BASE_Z + 2.2))
 plant_glass = bpy.context.active_object
 plant_glass.name = "BigOffice_Plant_Observation_Window"
 plant_glass.scale = (0.08, OFFICE_L - 0.4, 2.7)
 plant_glass.data.materials.append(mat_pulpit_glass)
 
-# Black anodized window framing mullions dividing the panoramic glass
 for my in [-6.0, -3.0, 0.0, 3.0, 6.0]:
     bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X + OFFICE_W/2, OFFICE_Y + my, OFFICE_BASE_Z + 2.2))
     mull = bpy.context.active_object
     mull.scale = (0.16, 0.14, 2.7)
     mull.data.materials.append(mat_cast_steel)
 
-# E. Office Exterior Identification Signage (Visible from Factory Floor)
+# E. Office Exterior Identification Signage
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X + OFFICE_W/2 + 0.08, OFFICE_Y, OFFICE_BASE_Z + 0.42))
 off_sign_plate = bpy.context.active_object
 off_sign_plate.scale = (0.04, 5.2, 0.50)
@@ -324,7 +318,6 @@ text_off.location = (OFFICE_X + OFFICE_W/2 + 0.12, OFFICE_Y, OFFICE_BASE_Z + 0.4
 text_off.rotation_euler = (math.radians(90), 0, math.radians(-90))
 
 # F. Interior Executive Conference Table & Workstations
-# Big Conference Table
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X, OFFICE_Y, OFFICE_BASE_Z + 0.8))
 conf_table = bpy.context.active_object
 conf_table.name = "BigOffice_Conference_Table"
@@ -332,14 +325,12 @@ conf_table.scale = (3.2, 6.4, 0.12)
 conf_table.data.materials.append(mat_wood_desk)
 apply_bevel(conf_table, 0.03)
 
-# Table Base Columns
 for cx in [-1.0, 1.0]:
     for cy in [-2.0, 2.0]:
         bpy.ops.mesh.primitive_cylinder_add(radius=0.12, depth=0.74, location=(OFFICE_X + cx, OFFICE_Y + cy, OFFICE_BASE_Z + 0.37))
         t_leg = bpy.context.active_object
         t_leg.data.materials.append(mat_cast_steel)
 
-# Conference Chairs around table
 for cy in [-2.2, -1.1, 0.0, 1.1, 2.2]:
     for cx, face_dir in [(-1.9, 1), (1.9, -1)]:
         bpy.ops.mesh.primitive_cylinder_add(radius=0.28, depth=0.1, location=(OFFICE_X + cx, OFFICE_Y + cy, OFFICE_BASE_Z + 0.55))
@@ -351,14 +342,13 @@ for cy in [-2.2, -1.1, 0.0, 1.1, 2.2]:
         back.scale = (0.08, 0.45, 0.70)
         back.data.materials.append(mat_conveyor_rubber)
 
-# Presentation Whiteboard on West Wall
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X - OFFICE_W/2 + 0.15, OFFICE_Y, OFFICE_BASE_Z + 1.8))
 wboard = bpy.context.active_object
 wboard.name = "BigOffice_Whiteboard"
 wboard.scale = (0.04, 5.0, 1.6)
 wboard.data.materials.append(mat_whiteboard)
 
-# G. Bright Warm Office Recessed Ceiling Light
+# G. Bright Warm Office Ceiling Light
 bpy.ops.object.light_add(type='AREA', location=(OFFICE_X, OFFICE_Y, OFFICE_BASE_Z + OFFICE_H - 0.2))
 off_light = bpy.context.active_object
 off_light.name = "BigOffice_Ceiling_Light"
@@ -366,7 +356,7 @@ off_light.data.energy = 850.0
 off_light.data.size = 5.0
 off_light.data.color = (1.0, 0.97, 0.94)
 
-# Dedicated Human Eye Camera Inside the Big Office (Looking out through observation glass at the plant)
+# Dedicated Human Eye Camera Inside the Big Office
 bpy.ops.object.camera_add(location=(OFFICE_X - 2.5, OFFICE_Y, OFFICE_BASE_Z + 1.65))
 cam_office_eye = bpy.context.active_object
 cam_office_eye.name = "Camera_BigOffice_Human_Eye"
@@ -377,51 +367,8 @@ align_obj_to_target(cam_office_eye, (19.0, 6.0, 5.0))
 # -------------------------------------------------------------
 # 6. Conveyor Networks
 # -------------------------------------------------------------
-def build_conveyor(name, center_x, center_y, center_z, length=9.0, width=1.35):
-    bpy.ops.mesh.primitive_cube_add(size=1, location=(center_x, center_y, center_z))
-    bed = bpy.context.active_object
-    bed.name = f"{name}_Bed"
-    bed.scale = (length, width, 0.22)
-    bed.data.materials.append(mat_machinery_green)
-    apply_bevel(bed, 0.02)
-
-    half_w = width / 2
-    for y_offset, side in [(-(half_w + 0.045), "L"), ((half_w + 0.045), "R")]:
-        bpy.ops.mesh.primitive_cube_add(size=1, location=(center_x, center_y + y_offset, center_z + 0.18))
-        rail = bpy.context.active_object
-        rail.name = f"{name}_Rail_{side}"
-        rail.scale = (length, 0.07, 0.3)
-        rail.data.materials.append(mat_safety_yellow)
-        apply_bevel(rail, 0.01)
-
-    steps = max(1, int(length // 2.5) + 1)
-    for k in range(steps):
-        px = (center_x - length / 2 + 0.6) + (k * 2.5)
-        if px > center_x + length / 2 - 0.4:
-            continue
-        leg_len = center_z if center_z < 3.0 else 0.45
-        leg_z_pos = (center_z / 2) if center_z < 3.0 else (center_z - 0.22)
-        for y_pos in [-(half_w - 0.02), (half_w - 0.02)]:
-            bpy.ops.mesh.primitive_cylinder_add(radius=0.08, depth=leg_len, location=(px, center_y + y_pos, leg_z_pos))
-            leg = bpy.context.active_object
-            leg.data.materials.append(mat_cast_steel)
-
-    num_rollers = int(length / 0.65)
-    for i in range(num_rollers):
-        rx = center_x - length / 2 + 0.3 + (i * 0.65)
-        bpy.ops.mesh.primitive_cylinder_add(radius=0.055, depth=width - 0.05, location=(rx, center_y, center_z + 0.11))
-        roller = bpy.context.active_object
-        roller.name = f"{name}_Roller_{i+1}"
-        roller.rotation_euler = (math.radians(90), 0, 0)
-        roller.data.materials.append(mat_roller_chrome)
-
-# Ground Floor Infeed Conveyor
 build_conveyor("Conveyor_Ground_Infeed", center_x=-3.0, center_y=7.5, center_z=0.6, length=22.0, width=1.35)
-
-# 1st Floor Staging Conveyor
 build_conveyor("Conveyor_1stFloor_Staging", center_x=16.0, center_y=0.0, center_z=4.6, length=41.0, width=1.35)
-
-# 1st Floor Rear Outfeed & Hot Rolling Conveyor Line
 build_conveyor("Conveyor_Rear_Rolling_Outfeed", center_x=34.0, center_y=REAR_CONVEYOR_Y, center_z=4.6, length=48.0, width=1.45)
 
 # -------------------------------------------------------------
@@ -465,7 +412,6 @@ PARKED_RAM_Y = -1.80
 STAGING_RAM_Y = -0.70
 
 for idx, fx in enumerate(furnace_positions):
-    # Recessed Pull Pit Trench
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx, -2.8, 3.8))
     pull_pit = bpy.context.active_object
     pull_pit.name = f"Pusher_Pull_Pit_{idx+1}"
@@ -473,7 +419,6 @@ for idx, fx in enumerate(furnace_positions):
     pull_pit.data.materials.append(mat_cast_steel)
     apply_bevel(pull_pit, 0.03)
 
-    # Massive Continuous Tunnel Hearth
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx, FURNACE_MID_Y, 4.4))
     hearth = bpy.context.active_object
     hearth.name = f"Furnace_Tunnel_Hearth_{idx+1}"
@@ -481,7 +426,6 @@ for idx, fx in enumerate(furnace_positions):
     hearth.data.materials.append(mat_furnace_oxide)
     apply_bevel(hearth, 0.04)
 
-    # Elongated Refractory Mantel
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx, FURNACE_MID_Y, 6.6))
     stack_rect = bpy.context.active_object
     stack_rect.name = f"Furnace_Tunnel_Stack_{idx+1}"
@@ -489,7 +433,6 @@ for idx, fx in enumerate(furnace_positions):
     stack_rect.data.materials.append(mat_furnace_mantle)
     apply_bevel(stack_rect, 0.03)
 
-    # Elongated Tunnel Roof
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx, FURNACE_MID_Y, 8.1))
     hood_flat = bpy.context.active_object
     hood_flat.name = f"Furnace_Tunnel_Roof_{idx+1}"
@@ -497,7 +440,6 @@ for idx, fx in enumerate(furnace_positions):
     hood_flat.data.materials.append(mat_cast_steel)
     apply_bevel(hood_flat, 0.02)
 
-    # Continuous Exhaust Chimneys along the long tunnel
     for chimney_x in [-1.5, 1.5]:
         for chimney_y in [FURNACE_MID_Y - 6.0, FURNACE_MID_Y - 2.0, FURNACE_MID_Y + 2.0, FURNACE_MID_Y + 6.0]:
             bpy.ops.mesh.primitive_cube_add(size=1, location=(fx + chimney_x, chimney_y, 9.6))
@@ -505,14 +447,12 @@ for idx, fx in enumerate(furnace_positions):
             flue.scale = (0.45, 0.45, 2.8)
             flue.data.materials.append(mat_cast_steel)
 
-    # Elongated Glowing Heating Bed / Molten Bath
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx, FURNACE_MID_Y, 3.8))
     bath = bpy.context.active_object
     bath.name = f"Molten_Bath_{idx+1}"
     bath.scale = (5.6, FURNACE_LEN_Y - 0.6, 0.25)
     bath.data.materials.append(mat_molten_iron)
 
-    # Front Throat & Infeed Gates
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx, FURNACE_FRONT_Y - 0.5, 4.8))
     front_throat = bpy.context.active_object
     front_throat.scale = (5.8, 1.2, 1.25)
@@ -539,7 +479,6 @@ for idx, fx in enumerate(furnace_positions):
     apply_bevel(fdoor_r, 0.02)
     front_doors_pair_list.append((fdoor_l, fdoor_r))
 
-    # Rear Throat & Discharge Gates
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx, FURNACE_REAR_Y - 0.5, 4.8))
     rear_throat = bpy.context.active_object
     rear_throat.scale = (5.8, 1.2, 1.25)
@@ -566,7 +505,6 @@ for idx, fx in enumerate(furnace_positions):
     apply_bevel(rdoor_r, 0.02)
     rear_doors_pair_list.append((rdoor_l, rdoor_r))
 
-    # Pushers
     bpy.ops.mesh.primitive_cube_add(size=1, location=(fx, -3.2, 4.8))
     stator = bpy.context.active_object
     stator.name = f"Pusher_Stator_{idx+1}"
@@ -686,11 +624,6 @@ for s_idx, mx in enumerate(mill_stand_positions):
 # -------------------------------------------------------------
 # 11. Self-Contained Wireless Cognex Vision Rig Helper
 # -------------------------------------------------------------
-def align_obj_to_target(obj, target_loc):
-    direction = mathutils.Vector(target_loc) - obj.location
-    rot_quat = direction.to_track_quat('-Z', 'Y')
-    obj.rotation_euler = rot_quat.to_euler()
-
 def build_high_detail_camera_rig(name, pos, target_loc, gantry_beam_loc):
     direction = (mathutils.Vector(target_loc) - mathutils.Vector(pos)).normalized()
     rot_quat = direction.to_track_quat('-Z', 'Y')
@@ -823,7 +756,6 @@ def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, fa
         cabin_len_y = 4.0
     cabin_h = 3.2
 
-    # Support Columns
     for col_x in [center_x - cabin_len_x/2 + 0.35, center_x + cabin_len_x/2 - 0.35]:
         for col_y in [center_y - cabin_len_y/2 + 0.35, center_y + cabin_len_y/2 - 0.35]:
             bpy.ops.mesh.primitive_cube_add(size=1, location=(col_x, col_y, (base_z + 4.45) / 2))
@@ -832,7 +764,6 @@ def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, fa
             col.scale = (0.32, 0.32, base_z - 4.45)
             col.data.materials.append(mat_cast_steel)
 
-    # Platform Base & Cantilever Underbody
     bpy.ops.mesh.primitive_cube_add(size=1, location=(center_x, center_y, base_z + 0.15))
     floor_obj = bpy.context.active_object
     floor_obj.name = f"{name_prefix}_Floor_Slab"
@@ -846,7 +777,6 @@ def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, fa
     under_wedge.scale = (cabin_len_x - 0.4, cabin_len_y - 0.4, 0.9)
     under_wedge.data.materials.append(mat_pulpit_dark)
 
-    # Lower Armored Hull Wall
     bpy.ops.mesh.primitive_cube_add(size=1, location=(center_x, center_y, base_z + 0.85))
     hull = bpy.context.active_object
     hull.name = f"{name_prefix}_Lower_Hull"
@@ -854,7 +784,6 @@ def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, fa
     hull.data.materials.append(mat_pulpit_body)
     apply_bevel(hull, 0.04)
 
-    # Panoramic Bay Windows & Observation Facade[cite: 1, 2, 3]
     glass_center_z = base_z + 2.1
 
     if facing == "NEG_X":
@@ -934,7 +863,6 @@ def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, fa
         catwalk_scale = (cabin_len_x + 0.8, 0.9, 0.12)
         rail_axis = 'X'
 
-    # Sign Board Construction[cite: 2]
     bpy.ops.mesh.primitive_cube_add(size=1, location=sign_pos)
     sign_plate = bpy.context.active_object
     sign_plate.scale = (3.4, 0.04, 0.45) if rail_axis == 'X' else (0.04, 3.4, 0.45)
@@ -952,7 +880,6 @@ def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, fa
     text_obj.location = sign_pos
     text_obj.rotation_euler = sign_rot
 
-    # Roof with Chamfer & Hazard Stripes[cite: 3, 4]
     roof_z = base_z + cabin_h + 0.15
     bpy.ops.mesh.primitive_cube_add(size=1, location=(center_x, center_y, roof_z))
     roof = bpy.context.active_object
@@ -961,7 +888,6 @@ def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, fa
     roof.data.materials.append(mat_pulpit_stripes)
     apply_bevel(roof, 0.08)
 
-    # Catwalk Platform & Yellow Handrails[cite: 2, 3]
     bpy.ops.mesh.primitive_cube_add(size=1, location=catwalk_loc)
     cwalk = bpy.context.active_object
     cwalk.scale = catwalk_scale
@@ -981,7 +907,6 @@ def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, fa
             top_rail.rotation_euler = (math.radians(90), 0, 0)
             top_rail.data.materials.append(mat_safety_yellow)
 
-    # Interior Console Desk, Monitors, and Operator Seat
     desk_loc = (center_x - 0.8, center_y, base_z + 1.1) if facing == "NEG_X" else (center_x, center_y + (0.8 if facing == "POS_Y" else -0.8), base_z + 1.1)
     bpy.ops.mesh.primitive_cube_add(size=1, location=desk_loc)
     c_desk = bpy.context.active_object
@@ -1045,7 +970,7 @@ cam_cp3_eye.data.lens = 24
 cam_cp3_eye.data.clip_end = 300.0
 align_obj_to_target(cam_cp3_eye, (27.0, REAR_CONVEYOR_Y, 4.8))
 
-# Default scene camera set to the Big Executive Office view overlooking the whole operation
+# Default scene camera set to the Big Executive Office view
 scene.camera = cam_office_eye
 
 # -------------------------------------------------------------
@@ -1388,12 +1313,12 @@ set_rot_key(cinematic_cam, 290, (math.radians(62), 0, math.radians(10)))
 
 set_loc_key(cinematic_cam, 291, (22.0, 0.6, 5.8))
 set_rot_key(cinematic_cam, 291, (math.radians(75), 0, math.radians(-65)))
-set_loc_key(cinematic_cam, 420, (32.0, 14.0, 6.8))
+set_loc_key(cinematic_cam, 420, (32.0, 22.0, 7.5))
 set_rot_key(cinematic_cam, 420, (math.radians(75), 0, math.radians(-165)))
 
-set_loc_key(cinematic_cam, 421, (38.0, 16.0, 7.5))
+set_loc_key(cinematic_cam, 421, (38.0, 24.0, 8.0))
 set_rot_key(cinematic_cam, 421, (math.radians(70), 0, math.radians(-145)))
-set_loc_key(cinematic_cam, 660, (50.0, 14.0, 6.5))
+set_loc_key(cinematic_cam, 660, (50.0, 22.0, 7.0))
 set_rot_key(cinematic_cam, 660, (math.radians(72), 0, math.radians(-155)))
 
 # -------------------------------------------------------------
