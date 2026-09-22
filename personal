@@ -431,7 +431,7 @@ def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, fa
     p_light.data.color = (0.9, 0.95, 1.0)
 
 # -------------------------------------------------------------
-# 5. Factory Floors & Mezzanine Setup
+# 5. Factory Floors & Continuous Mezzanine Setup (Full Floor Restored)
 # -------------------------------------------------------------
 furnace_positions = [22.0, 32.0]
 escalator_x_positions = [-3.0, 3.0]
@@ -453,16 +453,14 @@ walk_line_ground = bpy.context.active_object
 walk_line_ground.scale = (140.0, 0.15, 0.01)
 walk_line_ground.data.materials.append(mat_safety_walkway)
 
-# 1st Floor Operating Mezzanine Deck (Z = 4.45)
-# Sized so it stops right before the stairs without blocking the view
-bpy.ops.mesh.primitive_cube_add(size=1, location=(24.5, 9.0, 4.45))
+# 1st Floor Operating Mezzanine Deck (Fully Restored as requested)
+bpy.ops.mesh.primitive_cube_add(size=1, location=(34.0, 12.0, 4.45))
 first_floor_main = bpy.context.active_object
 first_floor_main.name = "First_Floor_Main_Deck"
-first_floor_main.scale = (39.0, 42.0, 0.28)
+first_floor_main.scale = (56.0, 62.0, 0.28)
 first_floor_main.data.materials.append(mat_mezzanine_floor)
 apply_bevel(first_floor_main, 0.03)
 
-# Dedicated floor extension directly securing CP-1's footprint
 bpy.ops.mesh.primitive_cube_add(size=1, location=(11.5, 6.8, 4.45))
 cp1_floor_support = bpy.context.active_object
 cp1_floor_support.name = "CP1_Dedicated_Mezzanine_Floor"
@@ -471,27 +469,27 @@ cp1_floor_support.data.materials.append(mat_mezzanine_floor)
 apply_bevel(cp1_floor_support, 0.03)
 
 # Structural Pillars Supporting 1st Floor Mezzanine
-for px in [6.0, 11.5, 27.0, 42.0]:
-    for py in [-10.0, 0.0, 6.8, 14.0, 24.0]:
+for px in [6.0, 11.5, 27.0, 42.0, 56.0]:
+    for py in [-10.0, 2.0, 14.0, 26.0]:
         bpy.ops.mesh.primitive_cube_add(size=1, location=(px, py, 2.22))
         mezz_col = bpy.context.active_object
         mezz_col.name = f"Column_1stFloor_{px}_{py}"
         mezz_col.scale = (0.50, 0.50, 4.45)
         mezz_col.data.materials.append(mat_cast_steel)
 
-bpy.ops.mesh.primitive_cube_add(size=1, location=(24.0, -1.2, 4.61))
+bpy.ops.mesh.primitive_cube_add(size=1, location=(30.0, -1.2, 4.61))
 walk_line_1st = bpy.context.active_object
-walk_line_1st.scale = (40.0, 0.18, 0.01)
+walk_line_1st.scale = (52.0, 0.18, 0.01)
 walk_line_1st.data.materials.append(mat_safety_walkway)
 
 # Factory Back Corrugated Wall
-bpy.ops.mesh.primitive_cube_add(size=1, location=(18.0, 32.0, 9.0))
+bpy.ops.mesh.primitive_cube_add(size=1, location=(18.0, 39.0, 9.0))
 wall_back = bpy.context.active_object
 wall_back.scale = (168.0, 0.6, 18.0)
 wall_back.data.materials.append(mat_wall_corrugated)
 
 # -------------------------------------------------------------
-# 6. BIG OFFICE & OPEN L-SHAPED STAIRCASE WITH PROPER HANDRAILS
+# 6. BIG OFFICE & FULL TWO-FLIGHT STAIRCASE (Rotated Correct Handrails)
 # -------------------------------------------------------------
 OFFICE_X = 46.5
 OFFICE_Y = -3.2
@@ -500,7 +498,6 @@ OFFICE_W = 8.5
 OFFICE_L = 14.0
 OFFICE_H = 3.6
 
-# Office Floor & Ceiling
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X, OFFICE_Y, OFFICE_BASE_Z + 0.03))
 office_carpet = bpy.context.active_object
 office_carpet.name = "BigOffice_Carpet_Floor"
@@ -514,7 +511,6 @@ office_roof.scale = (OFFICE_W + 0.6, OFFICE_L + 0.6, 0.22)
 office_roof.data.materials.append(mat_office_ceiling)
 apply_bevel(office_roof, 0.04)
 
-# Outer Walls
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X + OFFICE_W/2, OFFICE_Y, OFFICE_BASE_Z + OFFICE_H/2))
 wall_e = bpy.context.active_object
 wall_e.scale = (0.25, OFFICE_L, OFFICE_H)
@@ -553,7 +549,6 @@ for my in [-5.0, -2.5, 0.0, 2.5, 5.0]:
     mull.scale = (0.16, 0.14, 2.7)
     mull.data.materials.append(mat_cast_steel)
 
-# Sign Plate
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X - OFFICE_W/2 - 0.08, OFFICE_Y, OFFICE_BASE_Z + 0.42))
 off_sign_plate = bpy.context.active_object
 off_sign_plate.scale = (0.04, 5.8, 0.50)
@@ -571,7 +566,6 @@ bpy.context.collection.objects.link(text_off)
 text_off.location = (OFFICE_X - OFFICE_W/2 - 0.12, OFFICE_Y, OFFICE_BASE_Z + 0.42)
 text_off.rotation_euler = (math.radians(90), 0, math.radians(-90))
 
-# Conference Table
 bpy.ops.mesh.primitive_cube_add(size=1, location=(OFFICE_X + 0.5, OFFICE_Y, OFFICE_BASE_Z + 0.8))
 conf_table = bpy.context.active_object
 conf_table.name = "BigOffice_Conference_Table"
@@ -609,7 +603,7 @@ off_light.data.energy = 850.0
 off_light.data.size = 5.0
 off_light.data.color = (1.0, 0.97, 0.94)
 
-# --- STAIRCASE WITH CORRECTED HANDRAILS ---
+# --- STAIRCASE WITH CORRECTED HANDRAIL ROTATIONS ---
 BACK_X = OFFICE_X + OFFICE_W/2 + 1.2
 MID_LANDING_Z = OFFICE_BASE_Z * 0.52
 CORNER_Y = OFFICE_Y + OFFICE_L/2 + 1.6
@@ -637,16 +631,16 @@ for i in range(NUM_FLIGHT1_STEPS):
     st.data.materials.append(mat_cast_steel)
 
 for x_off in [-0.75, 0.75]:
-    # Corrected Handrail Rotation: Pitch along X axis (-f1_angle)
+    # Corrected Rotation for Flight 1 (Pitch along X axis)
     bpy.ops.mesh.primitive_cylinder_add(radius=0.032, depth=f1_diag, location=(BACK_X + x_off, f1_mid_y, f1_mid_z + 0.95))
     f1_rail = bpy.context.active_object
-    f1_rail.rotation_euler = (-f1_angle, 0, 0)
+    f1_rail.rotation_euler = (f1_angle, 0, 0)
     f1_rail.data.materials.append(mat_safety_yellow)
 
     bpy.ops.mesh.primitive_cube_add(size=1, location=(BACK_X + x_off, f1_mid_y, f1_mid_z - 0.12))
     f1_strg = bpy.context.active_object
     f1_strg.scale = (0.06, f1_diag, 0.18)
-    f1_strg.rotation_euler = (-f1_angle, 0, 0)
+    f1_strg.rotation_euler = (f1_angle, 0, 0)
     f1_strg.data.materials.append(mat_cast_steel)
 
     for i in range(NUM_FLIGHT1_STEPS):
@@ -701,16 +695,16 @@ for j in range(NUM_FLIGHT2_STEPS):
     st2.data.materials.append(mat_cast_steel)
 
 for y_off in [-0.75, 0.75]:
-    # Corrected Handrail Rotation: Pitch along Y axis (f2_angle)
+    # Corrected Rotation for Flight 2 (Pitch along Y axis)
     bpy.ops.mesh.primitive_cylinder_add(radius=0.032, depth=f2_diag, location=(f2_mid_x, CORNER_Y + y_off, f2_mid_z + 0.95))
     f2_rail = bpy.context.active_object
-    f2_rail.rotation_euler = (0, f2_angle, 0)
+    f2_rail.rotation_euler = (0, -f2_angle, 0)
     f2_rail.data.materials.append(mat_safety_yellow)
 
     bpy.ops.mesh.primitive_cube_add(size=1, location=(f2_mid_x, CORNER_Y + y_off, f2_mid_z - 0.12))
     f2_strg = bpy.context.active_object
     f2_strg.scale = (f2_diag, 0.06, 0.18)
-    f2_strg.rotation_euler = (0, f2_angle, 0)
+    f2_strg.rotation_euler = (0, -f2_angle, 0)
     f2_strg.data.materials.append(mat_cast_steel)
 
     for j in range(NUM_FLIGHT2_STEPS):
