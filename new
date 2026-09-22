@@ -160,7 +160,6 @@ mat_laptop_kb        = make_mat("LaptopKeyboardMat",     (0.02, 0.02, 0.025, 1.0
 mat_scada_screen_bg  = make_mat("SCADA_DisplayDarkNavy", (0.005, 0.015, 0.035, 1.0),emission=(0.005, 0.015, 0.035, 1.0), emission_strength=2.2)
 mat_scada_text_cyan  = make_mat("SCADA_TelemetryCyan",   (0.12, 0.85, 1.0, 1.0),    emission=(0.12, 0.85, 1.0, 1.0), emission_strength=16.0)
 mat_scada_text_green = make_mat("SCADA_TelemetryGreen",  (0.15, 1.0, 0.35, 1.0),    emission=(0.15, 1.0, 0.35, 1.0), emission_strength=18.0)
-mat_console_screen   = make_mat("PulpitMonitorOLED",     (0.01, 0.45, 0.85, 1.0),   emission=(0.01, 0.45, 0.85, 1.0), emission_strength=14.0)
 
 def apply_bevel(obj, width=0.03, segments=2):
     mod = obj.modifiers.new(name="Bevel", type='BEVEL')
@@ -185,7 +184,6 @@ walk_line_ground.scale = (140.0, 0.15, 0.01)
 walk_line_ground.data.materials.append(mat_safety_walkway)
 
 # 1st Floor Operating Mezzanine Deck (Z = 4.45)
-# East Deck
 bpy.ops.mesh.primitive_cube_add(size=1, location=(34.0, 4.0, 4.45))
 first_floor_main = bpy.context.active_object
 first_floor_main.name = "First_Floor_Main_Deck"
@@ -193,7 +191,6 @@ first_floor_main.scale = (56.0, 38.0, 0.28)
 first_floor_main.data.materials.append(mat_mezzanine_floor)
 apply_bevel(first_floor_main, 0.03)
 
-# West Deck
 bpy.ops.mesh.primitive_cube_add(size=1, location=(-13.0, 4.0, 4.45))
 first_floor_west = bpy.context.active_object
 first_floor_west.name = "First_Floor_West_Deck"
@@ -201,7 +198,6 @@ first_floor_west.scale = (14.0, 38.0, 0.28)
 first_floor_west.data.materials.append(mat_mezzanine_floor)
 apply_bevel(first_floor_west, 0.03)
 
-# Mid Walkway Between Elevator Cutouts
 bpy.ops.mesh.primitive_cube_add(size=1, location=(0.0, 4.0, 4.45))
 first_floor_mid = bpy.context.active_object
 first_floor_mid.name = "First_Floor_Mid_Walkway"
@@ -217,13 +213,11 @@ for px in [-15.0, 6.0, 11.5, 27.0, 42.0, 56.0]:
         mezz_col.scale = (0.50, 0.50, 4.45)
         mezz_col.data.materials.append(mat_cast_steel)
 
-# 1st Floor Safety Border Walkway
 bpy.ops.mesh.primitive_cube_add(size=1, location=(30.0, -1.2, 4.61))
 walk_line_1st = bpy.context.active_object
 walk_line_1st.scale = (52.0, 0.18, 0.01)
 walk_line_1st.data.materials.append(mat_safety_walkway)
 
-# Factory Back Corrugated Wall
 bpy.ops.mesh.primitive_cube_add(size=1, location=(18.0, 24.0, 9.0))
 wall_back = bpy.context.active_object
 wall_back.scale = (156.0, 0.6, 18.0)
@@ -651,7 +645,6 @@ def build_high_detail_camera_rig(name, pos, target_loc, gantry_beam_loc):
     ring_light.rotation_euler = rot_euler
     ring_light.data.materials.append(mat_lens_ring_led)
 
-    # Compact Wireless Antenna Base (clean, no hanging wires)
     back_loc = mathutils.Vector(pos) - (direction * 0.16)
     bpy.ops.mesh.primitive_cylinder_add(radius=0.02, depth=0.12, location=back_loc)
     antenna = bpy.context.active_object
@@ -948,13 +941,13 @@ def create_control_pulpit(name_prefix, sign_text, center_x, center_y, base_z, fa
 PULPIT_BASE_Z = 5.2
 
 # CABIN 1: CP-1 ELEVATOR MONITOR
-# Repositioned safely to the side at Y = -6.8, X = 11.5 (completely off the conveyor line at Y = 0.0)
+# Placed on the OPPOSITE side (+Y) of the infeed staging conveyor belt at Y = +6.8, X = 11.5
 # Faces -X (pointing straight at the infeed elevators) with 10.5m thermal buffer from Furnace 1 (X=22.0)
 create_control_pulpit(
     "Pulpit_Elevator",
     "CP-1 ELEVATOR CONTROL",
     center_x=11.5,
-    center_y=-6.8,
+    center_y=6.8,
     base_z=PULPIT_BASE_Z,
     facing="NEG_X",
     is_side_oriented=True
@@ -968,13 +961,13 @@ create_control_pulpit("Pulpit_Front", "CP-2 INFEED CONTROL", center_x=27.0, cent
 # Centered at X = 27.0, Y = 16.2, facing -Y towards discharge doors, cooling spray, and rolling mills
 create_control_pulpit("Pulpit_Rear", "CP-3 DISCHARGE CONTROL", center_x=27.0, center_y=16.2, base_z=PULPIT_BASE_Z, facing="NEG_Y")
 
-# Human Eye Camera 1: Inside CP-1 (Looking directly down the elevator infeed slope towards -X)
-bpy.ops.object.camera_add(location=(11.0, -6.8, PULPIT_BASE_Z + 1.65))
+# Human Eye Camera 1: Inside CP-1 (Looking across +Y at the elevator infeed slope towards -X)
+bpy.ops.object.camera_add(location=(11.0, 6.8, PULPIT_BASE_Z + 1.65))
 cam_cp1_eye = bpy.context.active_object
 cam_cp1_eye.name = "Camera_Pulpit_CP1_Elevator_Eye"
 cam_cp1_eye.data.lens = 24
 cam_cp1_eye.data.clip_end = 300.0
-align_obj_to_target(cam_cp1_eye, (0.0, 1.2, 4.16))
+align_obj_to_target(cam_cp1_eye, (0.0, 3.5, 4.16))
 
 # Human Eye Camera 2: Inside CP-2 (Looking +Y toward Furnace 1 & Furnace 2 charge doors)
 bpy.ops.object.camera_add(location=(27.0, -9.25, PULPIT_BASE_Z + 1.65))
@@ -992,7 +985,7 @@ cam_cp3_eye.data.lens = 24
 cam_cp3_eye.data.clip_end = 300.0
 align_obj_to_target(cam_cp3_eye, (27.0, 8.5, 4.8))
 
-# Default active scene camera set to side elevator-facing cabin (CP-1):
+# Default active scene camera set to the side elevator-facing cabin (CP-1):
 scene.camera = cam_cp1_eye
 
 # -------------------------------------------------------------
@@ -1145,7 +1138,7 @@ for pair_idx in range(NUM_PAIRS):
         set_rot_key(block, t_crest_esc, (0, 0, 0))
         set_loc_key(block, t_crest_esc, (esc_x, 0.0, 4.8))
 
-        # Travel unhindered past CP-1 Pulpit along the 1st Floor Staging Line to Target Furnace
+        # Travel along 1st Floor Staging Line to Target Furnace
         target_staging_x = furnace_x + pair_x_offset
         dist_to_furnace = abs(target_staging_x - esc_x)
         t_reach_furnace = t_crest_esc + int(dist_to_furnace * 2.1)
@@ -1308,9 +1301,9 @@ set_loc_key(cinematic_cam, 90,  (-1.0, 12.0, 4.8))
 set_rot_key(cinematic_cam, 90,  (math.radians(72), 0, math.radians(-130)))
 
 # Shot 2 (Frames 91 - 180): Elevator Ascent viewed through the side CP-1 Elevator Pulpit
-set_loc_key(cinematic_cam, 91,  (11.0, -6.8, PULPIT_BASE_Z + 1.65))
+set_loc_key(cinematic_cam, 91,  (11.0, 6.8, PULPIT_BASE_Z + 1.65))
 set_rot_key(cinematic_cam, 91,  (math.radians(80), 0, math.radians(-90)))
-set_loc_key(cinematic_cam, 180, (9.0, -4.8, PULPIT_BASE_Z + 1.8))
+set_loc_key(cinematic_cam, 180, (9.0, 4.5, PULPIT_BASE_Z + 1.8))
 set_rot_key(cinematic_cam, 180, (math.radians(75), 0, math.radians(-75)))
 
 # Shot 3 (Frames 181 - 290): Staging along 1st Floor Mezzanine towards Furnace 1 & 2
